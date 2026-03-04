@@ -2,9 +2,9 @@
 
 ## Gemini API Integration Guide
 
-We could pass contextual data like the user's streak count and current day number to make it more personalized
+We are using Google's Gemini 1.5 Flash model via the Generative Language REST API. This model is free to use under standard rate limits, making it ideal for a demo build. We can also pass contextual data like the user's streak count and current day number to make summaries more personalized
 
-## Google's Gemini 1.5 Flash model via the Generative Language REST API - this model is free to use under the standard rate limits, making it ideal for a demo build
+## AI Model
 
 |                 |                                                                |
 | --------------- | -------------------------------------------------------------- |
@@ -13,9 +13,11 @@ We could pass contextual data like the user's streak count and current day numbe
 | **Rate limits** | 15 req/min, 1,000 req/day                                      |
 | **Key**         | Generate at [aistudio.google.com](https://aistudio.google.com) |
 
-# Endpoint
+## Endpoint
 
+```
 POST https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=YOUR_API_KEY
+```
 
 ## Request Structure
 
@@ -23,7 +25,7 @@ POST https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:ge
 {
   "contents": [
     {
-      "parts": [{ "text": "<your prompt string here>" }]
+      "parts": [{ "text": "<YOUR_PROMPT_HERE>" }]
     }
   ],
   "generationConfig": {
@@ -34,7 +36,7 @@ POST https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:ge
 ```
 
 - **temperature** — creativity vs. predictability (0.7 = balanced, coach-like tone)
-- **maxOutputTokens** — caps response length to limit token usage
+- **maxOutputTokens** — caps response length to limit token usage (300–400 is sufficient for our use case)
 
 ## User Form Fields
 
@@ -45,7 +47,7 @@ POST https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:ge
 | `challenges`   | Text         | Obstacles faced        |
 | `focus`        | Text         | Tomorrow's priority    |
 
-Optional context for personalisation: `streak` (perfect days), `dayNumber` (e.g. Day 12/75)
+Optional context for personalization: `streak` (perfect days), `dayNumber` (e.g. Day 12/75)
 
 ## Response
 
@@ -54,7 +56,7 @@ Optional context for personalisation: `streak` (perfect days), `dayNumber` (e.g.
   "candidates": [
     {
       "content": {
-        "parts": [{ "text": "AI summary here..." }]
+        "parts": [{ "text": "<AI_SUMMARY>" }]
       }
     }
   ]
@@ -69,7 +71,14 @@ const summary = data.candidates[0].content.parts[0].text;
 
 ## Notes
 
-- Store API key in `.env`, never commit to version control
+- Store API key in `.env`, **never commit** to version control
 - Free tier is sufficient for demo and testing
 - Can adjust `temperature` to 0.8 for more personality
-- Reduce `maxOutputTokens` to 200 to shorten responses - 300-400 should be sufficient for our use case
+- Reduce `maxOutputTokens` to 200 to shorten responses
+
+## Documentation & References
+
+- [Gemini API Overview](https://ai.google.dev/gemini-api/docs)
+- [Gemini REST API Reference](https://ai.google.dev/api/generate-content)
+- [Gemini Models List](https://ai.google.dev/gemini-api/docs/models)
+- [Google AI Studio](https://aistudio.google.com)
