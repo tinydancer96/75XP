@@ -1,8 +1,8 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import base_prompt from "./base_prompt.js";
-import weekly_data from './request.js';
+import weekly_data from "./request.js";
 
-const genAI = new GoogleGenerativeAI('');
+const genAI = new GoogleGenerativeAI("");
 
 const model = genAI.getGenerativeModel({
   model: "gemini-3-flash-preview",
@@ -14,7 +14,7 @@ const model = genAI.getGenerativeModel({
 
 // Each weekly call only sends the data
 async function generateWeeklySummary(weeklyData) {
-  const prompt = JSON.stringify(weeklyData)
+  const prompt = JSON.stringify(weeklyData);
 
   try {
     const result = await model.generateContent(prompt);
@@ -25,4 +25,4 @@ async function generateWeeklySummary(weeklyData) {
   }
 }
 
-generateWeeklySummary(weekly_data)
+generateWeeklySummary(weekly_data);
