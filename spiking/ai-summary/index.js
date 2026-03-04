@@ -2,7 +2,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import base_prompt from "./base_prompt.js";
 import weekly_data from './request.js';
 
-const genAI = new GoogleGenerativeAI('AIzaSyCzW5xPkJKO3icvkFGXnXxArZhQsebLcBE');
+const genAI = new GoogleGenerativeAI('');
 
 const model = genAI.getGenerativeModel({
   model: "gemini-3-flash-preview",
