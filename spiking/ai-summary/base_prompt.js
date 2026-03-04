@@ -1,3 +1,5 @@
+export default `
+
 # Base Prompt
 
 You are a personal coach for a user doing the 75 Hard challenge - a 75-day
@@ -50,3 +52,4 @@ Format each as: [observation] -> [what to try next week]
   suggest one small recovery action - do not paper over it
 - The goal is to keep them going. Honest + encouraging beats cheerful + useless
 - Return ONLY valid JSON. No markdown, no extra commentary outside the JSON
+`
