@@ -5,3 +5,9 @@ A mobile app that helps users track their daily habits during the 75 Hard challe
 [View Project Presentation](https://www.canva.com/design/DAHC4xi2_tU/otKEfyHXPk4Bz2FXZ4S4sA/edit?utm_content=DAHC4xi2_tU&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)
 
 [Research Document](./Planning/RESEARCH.md)
+
+## Schema Diagram
+
+[View interactive schema on dbdiagram.io](https://dbdiagram.io/d/75XP-69a9ca53a3f0aa31e1f77446)
+
+![Schema diagram](assets/images/75XP.svg)
