@@ -8,6 +8,6 @@ A mobile app that helps users track their daily habits during the 75 Hard challe
 
 ## Schema Diagram
 
-[View interactive schema on dbdiagram.io](https://dbdiagram.io/d/75XP-69a9ca53a3f0aa31e1f77446)
+[View interactive schema on dbdiagram.io](https://dbdiagram.io/d/69aae92aa3f0aa31e1123fb2)
 
-![Schema diagram](assets/images/75XP.svg)
+![Schema diagram](./spiking/db/erd.png)

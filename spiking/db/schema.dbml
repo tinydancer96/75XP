@@ -1,0 +1,62 @@
+TABLE auth.users {
+ id UUID [pk]
+ auth_token varchar(250)
+}
+
+TABLE profiles {
+ id UUID [ref: > auth.users.id, pk]
+ username VARCHAR(50) [unique, not null]
+ name VARCHAR(100) [not null]
+ avatar_url VARCHAR(500)
+ created_at TIMESTAMP [default: `now()`]
+}
+
+TABLE days {
+ id SERIAL [pk]
+ profile_id UUID [not null, ref: > profiles.id]
+ day_number INT [not null, note: "1-75"]
+ diet_adhered BOOL [default: false]
+ outdoor_workout_completed BOOL [default: false]
+ indoor_workout_completed BOOL [default: false]
+ water_consumed BOOL [default: false]
+ currently_reading int [not null, ref: > books.id]
+ progress_pic  varchar(250)
+ all_complete BOOL [default: false]
+ created_at TIMESTAMP [default: `now()`]
+
+ indexes {
+ (profile_id, day_number) [unique]
+ }
+}
+
+TABLE reflections {
+ id SERIAL [pk]
+ day_id INT [not null, ref: - days.id]
+ mood_rating INT [note: "1-5"]
+ achievements VARCHAR(500)
+ challenges VARCHAR(500)
+ next_day_focus VARCHAR(300)
+ created_at TIMESTAMP [default: `now()`]
+}
+
+TABLE books {
+ id SERIAL [pk]
+ title VARCHAR(255) [not null]
+ author VARCHAR(255)
+ created_at TIMESTAMP [default: `now()`]
+}
+
+TABLE achievements {
+ id SERIAL [pk]
+ profile_id UUID [not null, ref: > profiles.id]
+ milestone INT [not null, note: "25, 50, 75"]
+ awarded_at TIMESTAMP [default: `now()`]
+}
+
+TABLE weekly_summaries {
+ id SERIAL [pk]
+ profile_id UUID [not null, ref: > profiles.id]
+ week INT [not null, note: "1-11"]
+ summary TEXT
+ created_at TIMESTAMP [default: `now()`]
+}

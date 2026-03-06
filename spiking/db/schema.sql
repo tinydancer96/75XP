@@ -1,0 +1,82 @@
+CREATE SCHEMA "auth";
+
+CREATE TABLE "auth"."users" (
+  "id" UUID PRIMARY KEY,
+  "auth_token" varchar(250)
+);
+
+CREATE TABLE "profiles" (
+  "id" UUID PRIMARY KEY,
+  "username" "VARCHAR(50)" UNIQUE NOT NULL,
+  "name" "VARCHAR(100)" NOT NULL,
+  "avatar_url" "VARCHAR(500)",
+  "created_at" TIMESTAMP DEFAULT (now())
+);
+
+CREATE TABLE "days" (
+  "id" SERIAL PRIMARY KEY,
+  "profile_id" UUID NOT NULL,
+  "day_number" INT NOT NULL,
+  "diet_adhered" BOOL DEFAULT false,
+  "outdoor_workout_completed" BOOL DEFAULT false,
+  "indoor_workout_completed" BOOL DEFAULT false,
+  "water_consumed" BOOL DEFAULT false,
+  "currently_reading" int NOT NULL,
+  "progress_pic" varchar(250),
+  "all_complete" BOOL DEFAULT false,
+  "created_at" TIMESTAMP DEFAULT (now())
+);
+
+CREATE TABLE "reflections" (
+  "id" SERIAL PRIMARY KEY,
+  "day_id" INT NOT NULL,
+  "mood_rating" INT,
+  "achievements" "VARCHAR(500)",
+  "challenges" "VARCHAR(500)",
+  "next_day_focus" "VARCHAR(300)",
+  "created_at" TIMESTAMP DEFAULT (now())
+);
+
+CREATE TABLE "books" (
+  "id" SERIAL PRIMARY KEY,
+  "title" "VARCHAR(255)" NOT NULL,
+  "author" "VARCHAR(255)",
+  "created_at" TIMESTAMP DEFAULT (now())
+);
+
+CREATE TABLE "achievements" (
+  "id" SERIAL PRIMARY KEY,
+  "profile_id" UUID NOT NULL,
+  "milestone" INT NOT NULL,
+  "awarded_at" TIMESTAMP DEFAULT (now())
+);
+
+CREATE TABLE "weekly_summaries" (
+  "id" SERIAL PRIMARY KEY,
+  "profile_id" UUID NOT NULL,
+  "week" INT NOT NULL,
+  "summary" TEXT,
+  "created_at" TIMESTAMP DEFAULT (now())
+);
+
+CREATE UNIQUE INDEX ON "days" ("profile_id", "day_number");
+
+COMMENT ON COLUMN "days"."day_number" IS '1-75';
+
+COMMENT ON COLUMN "reflections"."mood_rating" IS '1-5';
+
+COMMENT ON COLUMN "achievements"."milestone" IS '25, 50, 75';
+
+COMMENT ON COLUMN "weekly_summaries"."week" IS '1-11';
+
+ALTER TABLE "profiles" ADD FOREIGN KEY ("id") REFERENCES "auth"."users" ("id") DEFERRABLE INITIALLY IMMEDIATE;
+
+ALTER TABLE "days" ADD FOREIGN KEY ("profile_id") REFERENCES "profiles" ("id") DEFERRABLE INITIALLY IMMEDIATE;
+
+ALTER TABLE "days" ADD FOREIGN KEY ("currently_reading") REFERENCES "books" ("id") DEFERRABLE INITIALLY IMMEDIATE;
+
+ALTER TABLE "reflections" ADD FOREIGN KEY ("day_id") REFERENCES "days" ("id") DEFERRABLE INITIALLY IMMEDIATE;
+
+ALTER TABLE "achievements" ADD FOREIGN KEY ("profile_id") REFERENCES "profiles" ("id") DEFERRABLE INITIALLY IMMEDIATE;
+
+ALTER TABLE "weekly_summaries" ADD FOREIGN KEY ("profile_id") REFERENCES "profiles" ("id") DEFERRABLE INITIALLY IMMEDIATE;
