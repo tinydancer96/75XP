@@ -1,6 +1,7 @@
 services:
   db:
     image: postgres:14-alpine
+    container_name: 75xp-db
     restart: always
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
@@ -13,6 +14,7 @@ services:
       - ./backend/db/init:/docker-entrypoint-initdb.d
   api:
     build: ./backend
+    container_name: 75xp-api
     restart: always
     ports:
       - "3000:3000"
