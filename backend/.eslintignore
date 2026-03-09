@@ -1,0 +1,8 @@
+node_modules
+dist
+coverage
+.env
+*.config.js
+build/
+logs/
+*.log
