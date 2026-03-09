@@ -11,3 +11,10 @@ A mobile app that helps users track their daily habits during the 75 Hard challe
 [View interactive schema on dbdiagram.io](https://dbdiagram.io/d/69aae92aa3f0aa31e1123fb2)
 
 ![Schema diagram](./spiking/db/erd.png)
+
+## How to run sqlfluff
+
+```bash
+sqlfluff lint <file_path>
+sqlfluff fix <file_path>
+```

@@ -39,8 +39,11 @@ CREATE TABLE "reflections" (
 
 CREATE TABLE "books" (
   "id" SERIAL PRIMARY KEY,
+  "profile_id" UUID NOT NULL,
   "title" "VARCHAR(255)" NOT NULL,
   "author" "VARCHAR(255)",
+  "completed" BOOL DEFAULT false,
+  "completed_at" TIMESTAMP,
   "created_at" TIMESTAMP DEFAULT (now())
 );
 
@@ -76,6 +79,8 @@ ALTER TABLE "days" ADD FOREIGN KEY ("profile_id") REFERENCES "profiles" ("id") D
 ALTER TABLE "days" ADD FOREIGN KEY ("currently_reading") REFERENCES "books" ("id") DEFERRABLE INITIALLY IMMEDIATE;
 
 ALTER TABLE "reflections" ADD FOREIGN KEY ("day_id") REFERENCES "days" ("id") DEFERRABLE INITIALLY IMMEDIATE;
+
+ALTER TABLE "books" ADD FOREIGN KEY ("profile_id") REFERENCES "profiles" ("id") DEFERRABLE INITIALLY IMMEDIATE;
 
 ALTER TABLE "achievements" ADD FOREIGN KEY ("profile_id") REFERENCES "profiles" ("id") DEFERRABLE INITIALLY IMMEDIATE;
 

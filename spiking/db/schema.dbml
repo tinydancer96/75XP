@@ -41,8 +41,11 @@ TABLE reflections {
 
 TABLE books {
  id SERIAL [pk]
+ profile_id UUID [not null, ref: > profiles.id]
  title VARCHAR(255) [not null]
  author VARCHAR(255)
+ completed BOOL [default: false]
+ completed_at TIMESTAMP
  created_at TIMESTAMP [default: `now()`]
 }
 
