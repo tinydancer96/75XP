@@ -2,6 +2,8 @@ CREATE SCHEMA IF NOT EXISTS auth;
 
 CREATE TABLE auth.users (
   id UUID PRIMARY KEY,
+  email VARCHAR(255) UNIQUE NOT NULL,
+  password_hash TEXT NOT NULL,
   auth_token VARCHAR(250)
 );
 

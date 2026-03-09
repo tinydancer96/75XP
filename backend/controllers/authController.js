@@ -1,5 +1,6 @@
 const { Pool } = require("pg");
 const { v4: uuidv4 } = require("uuid");
+const bcrypt = require("bcrypt");
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -7,32 +8,47 @@ const pool = new Pool({
 
 async function registerUser(req, res) {
   try {
-    const { username, full_name } = req.body;
+    const { username, email, password } = req.body;
 
-    if (!username || !full_name) {
+    // validate fields
+    if (!username || !email || !password) {
       return res.status(400).json({
-        error: "username and full_name are required",
+        error: "username, email and password are required",
       });
     }
 
     const userId = uuidv4();
 
+    // hash password
+    const passwordHash = await bcrypt.hash(password, 10);
+
     // create auth user
-    await pool.query("INSERT INTO auth.users (id) VALUES ($1)", [userId]);
+    await pool.query(
+      `INSERT INTO auth.users (id, email, password_hash)
+       VALUES ($1, $2, $3)`,
+      [userId, email, passwordHash]
+    );
 
     // create profile
     const result = await pool.query(
-      `INSERT INTO profiles (id, username, full_name)
-       VALUES ($1, $2, $3)
+      `INSERT INTO profiles (id, username)
+       VALUES ($1, $2)
        RETURNING *`,
-      [userId, username, full_name]
+      [userId, username]
     );
 
     res.status(201).json({
-      message: "User registered",
+      message: "User registered successfully",
       user: result.rows[0],
     });
   } catch (err) {
+    // duplicate email or username
+    if (err.code === "23505") {
+      return res.status(409).json({
+        error: "Email or username already exists",
+      });
+    }
+
     console.error(err);
 
     res.status(500).json({
