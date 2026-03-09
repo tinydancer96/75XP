@@ -1,5 +1,7 @@
-const apiRouter = require("express").Router();
-const achievementsRouter = require("./achievementsRouter");
+import express from "express";
+import daysRouter from "./daysRouter.js";
+
+const apiRouter = express.Router();
 
 apiRouter.get("/", (req, res) => {
   res.status(200).send({
@@ -7,6 +9,6 @@ apiRouter.get("/", (req, res) => {
   });
 });
 
-apiRouter.use("/achievements", achievementsRouter);
+apiRouter.use("/days", daysRouter);
 
-module.exports = apiRouter;
+export default apiRouter;

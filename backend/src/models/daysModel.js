@@ -1,4 +1,4 @@
-const db = require("../../db/connection");
+import db from "../db/connection.js";
 
 const getDayById = async (dayId) => {
   const { rows } = await db.query(
@@ -23,4 +23,4 @@ const getDayById = async (dayId) => {
   return rows[0];
 };
 
-module.exports = { getDayById };
+export { getDayById };
