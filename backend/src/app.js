@@ -1,13 +1,18 @@
-import express from "express";
-import cors from "cors";
-import apiRouter from "./routes/index.js";
+import cors from 'cors';
+import express from 'express';
+import errorHandler from './middleware/error.middleware.js';
+import daysRoutes from './routes/day.routes.js';
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
-app.get("/health", (_req, res) => res.status(200).json({ status: "ok" }));
-app.use("/api", apiRouter);
+app.use('/api/days', daysRoutes);
+
+app.use(errorHandler);
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
 export default app;
