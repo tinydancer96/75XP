@@ -24,7 +24,8 @@ const TASKS: Task[] = [
   { key: "indoorWorkout", label: "Indoor Workout", emoji: "🏋️", subtitle: "45 min minimum inside" },
   { key: "water", label: "Water", emoji: "💧", subtitle: "Drink 1 gallon (≈4 litres)" },
   { key: "reading", label: "Reading", emoji: "📖", subtitle: "10 pages of a non-fiction book" },
-  { key: "progressPhoto", label: "Progress Photo", emoji: "📸", subtitle: "Take your daily photo" },
+  // Photo Progress removed - spiking upload functionality separately
+  // { key: "progressPhoto", label: "Progress Photo", emoji: "📸", subtitle: "Take your daily photo" },
 ];
 
 export default function HomeTasksScreen() {
@@ -76,11 +77,12 @@ export default function HomeTasksScreen() {
               </View>
 
               <View style={styles.cardRight}>
-                {task.key === "progressPhoto" && (
+                {/* 📸 Upload button commented out — spiking photo upload separately */}
+                {/* {task.key === "progressPhoto" && (
                   <TouchableOpacity style={styles.uploadBtn} activeOpacity={0.8}>
                     <Text style={styles.uploadBtnText}>Upload</Text>
                   </TouchableOpacity>
-                )}
+                )} */}
 
                 <TouchableOpacity
                   style={[styles.checkbox, done && styles.checkboxDone]}
@@ -237,17 +239,18 @@ const styles = StyleSheet.create({
     gap: 10,
   },
 
-  uploadBtn: {
-    backgroundColor: "#EEF1FE",
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 7,
-  },
-  uploadBtnText: {
-    color: ACCENT,
-    fontSize: 12,
-    fontWeight: "600",
-  },
+  // 📸 Upload button styles commented out — spiking photo upload separately
+  // uploadBtn: {
+  //   backgroundColor: "#EEF1FE",
+  //   paddingHorizontal: 12,
+  //   paddingVertery: 6,
+  //   borderRadius: 7,
+  // },
+  // uploadBtnText: {
+  //   color: ACCENT,
+  //   fontSize: 12,
+  //   fontWeight: "600",
+  // },
 
   checkbox: {
     width: 26,
