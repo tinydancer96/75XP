@@ -1,4 +1,37 @@
-import { Text } from "react-native";
+import {
+  Text,
+  ImageBackground,
+  StyleSheet,
+  ScrollView,
+  Dimensions,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+
+const { width, height } = Dimensions.get("window");
+
 export default function Map() {
-  return <Text>Map Page</Text>;
+  const image = {
+    uri: "https://i.pinimg.com/1200x/a5/2a/1c/a52a1c08cec6578928dd2d840c66a843.jpg",
+  };
+  return (
+    <SafeAreaView style={styles.container}>
+      <ScrollView>
+        <ImageBackground
+          source={image}
+          resizeMode="cover"
+          style={styles.image}
+        />
+      </ScrollView>
+    </SafeAreaView>
+  );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  image: {
+    width: width,
+    aspectRatio: 1200 / 2000,
+  },
+});
