@@ -15,8 +15,7 @@ const TASKS = [
   { key: "indoorWorkout", label: "Indoor Workout", emoji: "🏋️", subtitle: "45 min minimum inside" },
   { key: "water", label: "Water", emoji: "💧", subtitle: "Drink 1 gallon (≈4 litres)" },
   { key: "reading", label: "Reading", emoji: "📖", subtitle: "10 pages of a non-fiction book" },
-  { key: "reflection", label: "Reflection", emoji: "🪞", subtitle: "Complete today's reflection" },
-  // 📸 Progress Photo removed — spiking upload functionality separately
+  // Photo removed, I am spiking upload functionality separately
   // { key: "progressPhoto", label: "Progress Photo", emoji: "📸", subtitle: "Take your daily photo" },
   { key: "reflection", label: "Reflection", emoji: "🪞", subtitle: "Complete today's reflection" },
 ];
