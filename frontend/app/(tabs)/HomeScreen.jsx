@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { router } from "expo-router";
 
 const DAY_NUMBER = 7;
 
@@ -34,9 +35,23 @@ export default function HomeScreen() {
   return (
     <SafeAreaView style={styles.safe}>
       <View style={styles.header}>
-        <TouchableOpacity style={styles.loginBtn} activeOpacity={0.8}>
-          <Text style={styles.loginBtnText}>Login</Text>
-        </TouchableOpacity>
+        <View style={{ flexDirection: "row", gap: 10 }}>
+          <TouchableOpacity
+            style={styles.loginBtn}
+            activeOpacity={0.8}
+            onPress={() => router.push("/login")}
+          >
+            <Text style={styles.loginBtnText}>Login</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.loginBtn}
+            activeOpacity={0.8}
+            onPress={() => router.push("/register")}
+          >
+            <Text style={styles.loginBtnText}>Register</Text>
+          </TouchableOpacity>
+        </View>
 
         <View style={styles.dayBadge}>
           <Text style={styles.dayNumber}>Day {DAY_NUMBER}</Text>
