@@ -11,7 +11,8 @@ services:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
-      - ./backend/db/init:/docker-entrypoint-initdb.d
+      - ./backend/migrations:/docker-entrypoint-initdb.d
+      - ./backend/schema.sql:/schema.sql
   api:
     build: ./backend
     container_name: 75xp-api
