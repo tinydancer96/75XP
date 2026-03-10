@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet, SafeAreaView } from "react-native";
-import NavBar from "../components/NavBar";
+import NavBar from "../(tabs)/NavBar";
 
 type NavTab = "Home" | "Map" | "Reflect" | "Profile";
 
