@@ -26,6 +26,7 @@ const TASKS: Task[] = [
   { key: "reading", label: "Reading", emoji: "📖", subtitle: "10 pages of a non-fiction book" },
   // Photo Progress removed - spiking upload functionality separately
   // { key: "progressPhoto", label: "Progress Photo", emoji: "📸", subtitle: "Take your daily photo" },
+  { key: "reflection", label: "Reflection", emoji: "🪞", subtitle: "Complete today's reflection" },
 ];
 
 export default function HomeTasksScreen() {
