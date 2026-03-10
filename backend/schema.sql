@@ -1,8 +1,5 @@
-CREATE SCHEMA IF NOT EXISTS auth;
-
-CREATE TABLE auth.users (
-  id UUID PRIMARY KEY,
-  auth_token VARCHAR(250)
+CREATE TABLE users (
+  id UUID PRIMARY KEY
 );
 
 CREATE TABLE profiles (
@@ -31,8 +28,8 @@ CREATE TABLE days (
   outdoor_workout_completed BOOL DEFAULT false,
   indoor_workout_completed BOOL DEFAULT false,
   water_consumed BOOL DEFAULT false,
-  currently_reading INT NOT NULL,
-  progress_pic VARCHAR(250),
+  currently_reading INT,
+  progress_pic VARCHAR(500),
   all_complete BOOL DEFAULT false,
   created_at TIMESTAMP DEFAULT NOW()
 );
@@ -47,10 +44,12 @@ CREATE TABLE reflections (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
+
 CREATE TABLE achievements (
   id SERIAL PRIMARY KEY,
   profile_id UUID NOT NULL,
   milestone INT NOT NULL,
+  badge_type VARCHAR(10) NOT NULL,
   awarded_at TIMESTAMP DEFAULT (NOW())
 );
 
@@ -63,13 +62,17 @@ CREATE TABLE weekly_summaries (
 );
 
 CREATE UNIQUE INDEX ON days (profile_id, day_number);
+CREATE UNIQUE INDEX ON achievements     (profile_id, milestone);
+CREATE UNIQUE INDEX ON weekly_summaries (profile_id, week);
+CREATE UNIQUE INDEX ON reflections      (day_id);
 
 COMMENT ON COLUMN days.day_number IS '1-75';
 COMMENT ON COLUMN reflections.mood_rating IS '1-5';
 COMMENT ON COLUMN achievements.milestone IS '25, 50, 75';
+COMMENT ON COLUMN achievements.badge_type IS 'bronze (25), silver (50), gold (75)';
 COMMENT ON COLUMN weekly_summaries.week IS '1-11';
 
-ALTER TABLE profiles ADD FOREIGN KEY (id) REFERENCES auth.users (id) DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE profiles ADD FOREIGN KEY (id) REFERENCES users (id) DEFERRABLE INITIALLY IMMEDIATE;
 ALTER TABLE days ADD FOREIGN KEY (profile_id) REFERENCES profiles (id) DEFERRABLE INITIALLY IMMEDIATE;
 ALTER TABLE days ADD FOREIGN KEY (currently_reading) REFERENCES books (id) DEFERRABLE INITIALLY IMMEDIATE;
 ALTER TABLE reflections ADD FOREIGN KEY (day_id) REFERENCES days (id) DEFERRABLE INITIALLY IMMEDIATE;
