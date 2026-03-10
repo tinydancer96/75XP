@@ -1,13 +1,22 @@
-import { getDayById } from "../models/daysModel.js";
+import { getDayByUser } from "../models/daysModel.js";
 
-const fetchDayById = async (dayId, profileId) => {
-  const day = await getDayById(dayId);
+const fetchDayByUser = async (profile_id, day_number) => {
+  if (day_number < 1 || day_number > 75) {
+    const err = new Error("Invalid day numbers");
+    err.status = 400;
+    throw err;
+  }
+  const day = await getDayByUser(profile_id, day_number);
 
-  if (!day) throw { status: 404, error: "Day not found" };
-  if (day.profile_id !== profileId) throw { status: 403, error: "Forbidden" };
+  if (!day) {
+    const err = Error("Day not found");
+    err.status = 404;
+    throw err;
+  }
 
   return {
     id: day.id,
+    profile_id: day.profile_id,
     day_number: day.day_number,
     progress_pic: day.progress_pic,
     reflection: {
@@ -19,4 +28,4 @@ const fetchDayById = async (dayId, profileId) => {
   };
 };
 
-export { fetchDayById };
+export { fetchDayByUser };

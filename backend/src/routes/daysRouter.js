@@ -1,8 +1,8 @@
 import express from "express";
-import { getDay } from "../controllers/daysController";
+import { getDayByUser } from "../controllers/daysController.js";
 
 const daysRouter = express.Router();
 
-daysRouter.get("/dayId", getDay);
+daysRouter.get("/:profile_id/:day_number", getDayByUser);
 
 export default daysRouter;

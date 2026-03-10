@@ -1,14 +1,13 @@
-import { fetchDayById } from "../services/daysServices.js";
+import { fetchDayByUser } from "../services/daysServices.js";
 
-const getDay = async (req, res, next) => {
+const getDayByUser = async (req, res, next) => {
   try {
-    const { dayId } = req.params;
-    const profileId = req.user.id;
-    const data = await fetchDayById(dayId, profileId);
+    const { profile_id, day_number } = req.params;
+    const data = await fetchDayByUser(profile_id, day_number);
     res.status(200).json(data);
   } catch (err) {
     next(err);
   }
 };
 
-export { getDay };
+export { getDayByUser };

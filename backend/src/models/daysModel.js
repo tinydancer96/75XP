@@ -1,6 +1,6 @@
 import db from "../db/connection.js";
 
-const getDayById = async (dayId) => {
+const getDayByUser = async (profile_id, day_number) => {
   const { rows } = await db.query(
     `
     SELECT
@@ -16,11 +16,11 @@ const getDayById = async (dayId) => {
         days
     LEFT JOIN reflections ON reflections.day_id = days.id
     WHERE
-        days.id = $1;
+        days.profile_id = $1 AND days.day_number = $2;
         `,
-    [dayId]
+    [profile_id, day_number]
   );
   return rows[0];
 };
 
-export { getDayById };
+export { getDayByUser };
