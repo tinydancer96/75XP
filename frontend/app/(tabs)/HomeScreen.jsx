@@ -1,19 +1,10 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet, SafeAreaView } from "react-native";
-import NavBar from "../(tabs)/NavBar";
-
-type NavTab = "Home" | "Map" | "Reflect" | "Profile";
-
-interface Task {
-  key: string;
-  label: string;
-  emoji: string;
-  subtitle: string;
-}
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const DAY_NUMBER = 7;
 
-const TASKS: Task[] = [
+const TASKS = [
   { key: "diet", label: "Diet", emoji: "🥗", subtitle: "Stick to your plan, no cheat meals" },
   {
     key: "outdoorWorkout",
@@ -24,18 +15,16 @@ const TASKS: Task[] = [
   { key: "indoorWorkout", label: "Indoor Workout", emoji: "🏋️", subtitle: "45 min minimum inside" },
   { key: "water", label: "Water", emoji: "💧", subtitle: "Drink 1 gallon (≈4 litres)" },
   { key: "reading", label: "Reading", emoji: "📖", subtitle: "10 pages of a non-fiction book" },
-  // Photo Progress removed - spiking upload functionality separately
+  { key: "reflection", label: "Reflection", emoji: "🪞", subtitle: "Complete today's reflection" },
+  // 📸 Progress Photo removed — spiking upload functionality separately
   // { key: "progressPhoto", label: "Progress Photo", emoji: "📸", subtitle: "Take your daily photo" },
   { key: "reflection", label: "Reflection", emoji: "🪞", subtitle: "Complete today's reflection" },
 ];
 
-export default function HomeTasksScreen() {
-  const [activeTab, setActiveTab] = useState<NavTab>("Home");
-  const [checked, setChecked] = useState<Record<string, boolean>>(
-    Object.fromEntries(TASKS.map((t) => [t.key, false])),
-  );
+export default function HomeScreen() {
+  const [checked, setChecked] = useState(Object.fromEntries(TASKS.map((t) => [t.key, false])));
 
-  const toggle = (key: string) => setChecked((prev) => ({ ...prev, [key]: !prev[key] }));
+  const toggle = (key) => setChecked((prev) => ({ ...prev, [key]: !prev[key] }));
 
   const completedCount = Object.values(checked).filter(Boolean).length;
   const allDone = completedCount === TASKS.length;
@@ -78,13 +67,6 @@ export default function HomeTasksScreen() {
               </View>
 
               <View style={styles.cardRight}>
-                {/* 📸 Upload button commented out — spiking photo upload separately */}
-                {/* {task.key === "progressPhoto" && (
-                  <TouchableOpacity style={styles.uploadBtn} activeOpacity={0.8}>
-                    <Text style={styles.uploadBtnText}>Upload</Text>
-                  </TouchableOpacity>
-                )} */}
-
                 <TouchableOpacity
                   style={[styles.checkbox, done && styles.checkboxDone]}
                   onPress={() => toggle(task.key)}
@@ -104,8 +86,6 @@ export default function HomeTasksScreen() {
 
         <View style={{ height: 24 }} />
       </ScrollView>
-
-      <NavBar activeTab={activeTab} onTabPress={setActiveTab} />
     </SafeAreaView>
   );
 }
@@ -122,7 +102,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: BG,
   },
-
   header: {
     flexDirection: "row",
     alignItems: "center",
@@ -159,7 +138,6 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     marginTop: -2,
   },
-
   progressWrapper: {
     paddingHorizontal: 20,
     paddingBottom: 16,
@@ -186,13 +164,11 @@ const styles = StyleSheet.create({
     minWidth: 70,
     textAlign: "right",
   },
-
   scrollContent: {
     paddingHorizontal: 20,
     paddingTop: 4,
     gap: 12,
   },
-
   card: {
     backgroundColor: CARD,
     borderRadius: 14,
@@ -239,20 +215,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 10,
   },
-
-  // 📸 Upload button styles commented out — spiking photo upload separately
-  // uploadBtn: {
-  //   backgroundColor: "#EEF1FE",
-  //   paddingHorizontal: 12,
-  //   paddingVertery: 6,
-  //   borderRadius: 7,
-  // },
-  // uploadBtnText: {
-  //   color: ACCENT,
-  //   fontSize: 12,
-  //   fontWeight: "600",
-  // },
-
   checkbox: {
     width: 26,
     height: 26,
@@ -273,7 +235,6 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     lineHeight: 18,
   },
-
   allDoneBanner: {
     backgroundColor: "#EEF1FE",
     borderRadius: 12,
