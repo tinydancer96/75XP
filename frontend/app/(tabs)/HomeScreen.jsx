@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from "react-native";
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Image } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import * as ImagePicker from "expo-image-picker";
 
 const DAY_NUMBER = 7;
 
@@ -21,12 +22,26 @@ const TASKS = [
     emoji: "🪞",
     subtitle: "Complete today's reflection",
   },
+  { key: "progressPhoto", label: "Progress Photo", emoji: "📸", subtitle: "Take your daily photo" },
 ];
 
 export default function HomeScreen() {
   const [checked, setChecked] = useState(Object.fromEntries(TASKS.map((t) => [t.key, false])));
+  const [photo, setPhoto] = useState(null);
 
   const toggle = (key) => setChecked((prev) => ({ ...prev, [key]: !prev[key] }));
+
+  const pickImage = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: false,
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setPhoto(result.assets[0].uri);
+    }
+  };
 
   const completedCount = Object.values(checked).filter(Boolean).length;
   const allDone = completedCount === TASKS.length;
@@ -69,11 +84,22 @@ export default function HomeScreen() {
               </View>
 
               <View style={styles.cardRight}>
+                {task.key === "progressPhoto" && (
+                  <View style={styles.photoContainer}>
+                    {photo && <Image source={{ uri: photo }} style={styles.photoPreview} />}
+                    <TouchableOpacity
+                      style={styles.uploadBtn}
+                      onPress={pickImage}
+                      activeOpacity={0.8}>
+                      <Text style={styles.uploadBtnText}>{photo ? "Change" : "Upload"}</Text>
+                    </TouchableOpacity>
+                  </View>
+                )}
+
                 <TouchableOpacity
                   style={[styles.checkbox, done && styles.checkboxDone]}
                   onPress={() => toggle(task.key)}
-                  activeOpacity={0.8}
-                >
+                  activeOpacity={0.8}>
                   {done && <Text style={styles.checkmark}>✓</Text>}
                 </TouchableOpacity>
               </View>
@@ -217,6 +243,27 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 10,
+  },
+  photoContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  photoPreview: {
+    width: 36,
+    height: 36,
+    borderRadius: 6,
+  },
+  uploadBtn: {
+    backgroundColor: "#EEF1FE",
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 7,
+  },
+  uploadBtnText: {
+    color: ACCENT,
+    fontSize: 12,
+    fontWeight: "600",
   },
   checkbox: {
     width: 26,
