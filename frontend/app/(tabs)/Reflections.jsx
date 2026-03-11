@@ -40,3 +40,33 @@ export default function Reflections() {
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  safe: {
+    flex: 1,
+    backgroundColor: BG,
+  },
+  header: {
+    paddingHorizontal: 20,
+    paddingTop: 16,
+    paddingBottom: 16,
+    backgroundColor: BG,
+  },
+  heading: {
+    fontSize: 24,
+    fontWeight: "700",
+    color: PURPLE,
+    letterSpacing: -0.5,
+  },
+  subheading: {
+    fontSize: 13,
+    color: MUTED,
+    fontWeight: "500",
+    marginTop: 2,
+  },
+  scrollContent: {
+    paddingHorizontal: 20,
+    paddingTop: 8,
+    gap: 16,
+  },
+});
