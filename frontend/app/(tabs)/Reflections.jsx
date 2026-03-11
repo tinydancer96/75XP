@@ -6,7 +6,7 @@ import MoodTracker from "../components/MoodTracker";
 const mockReflection = {
   id: 1,
   day_id: 1,
-  mood_rating: 4,
+  mood_rating: null,
   achievements: "Completed my workout and drank all my water.",
   challenges: "Struggled to stay off my phone in the evening.",
   next_day_focus: "Get to bed before 11pm and prep meals.",
