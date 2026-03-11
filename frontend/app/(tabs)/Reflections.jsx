@@ -1,5 +1,5 @@
 import { ScrollView, Text, StyleSheet, View, TouchableOpacity } from "react-native";
-import { useState, setState } from "react";
+import { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const mockReflection = {
@@ -19,6 +19,23 @@ const CARD = "#FFFFFF";
 const MUTED = "#9A9AAF";
 const TEXT = "#1A1A2E";
 
+const getMoodColor = (rating) => {
+  switch (rating) {
+    case 1:
+      return "#E05555";
+    case 2:
+      return "#E07A55";
+    case 3:
+      return "#E0C155";
+    case 4:
+      return "#82C55A";
+    case 5:
+      return "#55C57A";
+    default:
+      return "#E2E4EE";
+  }
+};
+
 export default function Reflections() {
   const [mood, setMood] = useState(mockReflection.mood_rating);
 
@@ -35,14 +52,16 @@ export default function Reflections() {
         indicatorStyle="black"
       >
         <View style={styles.card}>
-          <Text style={styles.cardLabel}>How are you feeling?</Text>
+          <Text style={styles.cardLabel}>How are you feeling today?</Text>
           <View style={styles.moodRow}>
             {[1, 2, 3, 4, 5].map((rating) => (
               <TouchableOpacity
                 key={rating}
-                style={[styles.moodDot, mood == rating && styles.moodDotSelected]}
-                onPress={() => setMood(rating)}
-                activeOpacity={0.8}
+                style={[styles.moodDot, mood >= rating && { backgroundColor: getMoodColor(mood) }]}
+                onPress={() => {
+                  if (!mockReflection.mood_rating) setMood(rating);
+                }}
+                activeOpacity={mockReflection.mood_rating ? 1 : 0.8}
               />
             ))}
           </View>
@@ -101,12 +120,15 @@ const styles = StyleSheet.create({
   moodRow: {
     flexDirection: "row",
     gap: 12,
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   moodDot: {
     width: 36,
     height: 36,
     borderRadius: 18,
     backgroundColor: "#E2E4EE",
+    marginHorizontal: 4,
   },
   moodDotSelected: {
     backgroundColor: BLUE,
