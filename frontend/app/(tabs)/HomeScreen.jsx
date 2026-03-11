@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Image } from "react-native";
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Image, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as ImagePicker from "expo-image-picker";
 
@@ -32,8 +32,15 @@ export default function HomeScreen() {
   const toggle = (key) => setChecked((prev) => ({ ...prev, [key]: !prev[key] }));
 
   const pickImage = async () => {
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    if (!permissionResult.granted) {
+      Alert.alert("Permission required", "Permission to access the photo library is required.");
+      return;
+    }
+
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: ["images"],
       allowsEditing: false,
       quality: 1,
     });
