@@ -24,39 +24,59 @@ export default function Achievements(){
   75: { label: "Gold Badge", icon: "🥇" }
 };
  
-   
-    return(<View style={styles.container}> <Text style={styles.title}>Achievements</Text> 
-    {achievements.map((achievement) => {
 
   const badge = badgeConfig[achievement.milestone];
 
-  return (
-    <View key={achievement.id} style={styles.badge}>
+   return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Achievements</Text>
 
-      <Text style={{fontSize: 40}}>
-        {badge.icon}
-      </Text>
+      <View style={styles.badgesRow}>
+        {achievements.map((achievement) => {
 
-      <View>
-        <Text>{badge.label}</Text>
-        <Text>
-          Earned on {new Date(achievement.awarded_at).toDateString()}
-        </Text>
+          const badge = badgeConfig[achievement.milestone];
+
+          return (
+            <View key={achievement.id} style={styles.badge}>
+              <Text style={styles.badgeIcon}>{badge.icon}</Text>
+
+              <Text>{badge.label}</Text>
+
+              <Text>
+                {new Date(achievement.awarded_at).toDateString()}
+              </Text>
+            </View>
+          );
+
+        })}
       </View>
 
     </View>
   );
-
-})} </View>)
-    
 }
+const styles = StyleSheet.create({
 
-const styles=StyleSheet.create({
-    container:{
-        marginTop:20
-    },
-    title:{
-        fontSize:20,
-        fontWeight: "bold"
-    }
+  container:{
+    marginTop:20
+  },
+
+  title:{
+    fontSize:20,
+    fontWeight:"bold",
+    marginBottom:10
+  },
+
+  badgesRow:{
+    flexDirection:"row",
+    justifyContent:"space-around"
+  },
+
+  badge:{
+    alignItems:"center"
+  },
+
+  badgeIcon:{
+    fontSize:40
+  }
+
 })
