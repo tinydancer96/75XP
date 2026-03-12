@@ -1,10 +1,4 @@
-import {
-  Text,
-  ImageBackground,
-  StyleSheet,
-  ScrollView,
-  Dimensions,
-} from "react-native";
+import { Text, ImageBackground, StyleSheet, ScrollView, Dimensions, FlatList } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const { width, height } = Dimensions.get("window");
@@ -16,11 +10,9 @@ export default function Map() {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>
-        <ImageBackground
-          source={image}
-          resizeMode="cover"
-          style={styles.image}
-        />
+        <ImageBackground source={image} resizeMode="cover" style={styles.image}>
+          <FlatList numColumns={15}></FlatList>
+        </ImageBackground>
       </ScrollView>
     </SafeAreaView>
   );
