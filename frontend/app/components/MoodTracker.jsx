@@ -22,7 +22,9 @@ const getMoodColor = (rating) => {
 export default function MoodTracker({ mood, onSelect, isLocked }) {
   return (
     <View style={styles.card}>
-      <Text style={styles.cardLabel}>How are you feeling today?</Text>
+      <Text style={styles.cardLabel}>
+        {isLocked ? "Today's mood" : "How are you feeling today?"}
+      </Text>
       <View style={styles.moodRow}>
         {[1, 2, 3, 4, 5].map((rating) => (
           <TouchableOpacity
@@ -69,11 +71,5 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     backgroundColor: "#E2E4EE",
     marginHorizontal: 4,
-  },
-  moodSavedLabel: {
-    fontSize: 12,
-    color: MUTED,
-    marginTop: 10,
-    fontWeight: "500",
   },
 });

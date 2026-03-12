@@ -1,4 +1,5 @@
 import { View, Text, TextInput, StyleSheet } from "react-native";
+import { useState } from "react";
 
 const MUTED = "#9A9AAF";
 const TEXT = "#1A1A2E";
@@ -6,14 +7,15 @@ const CARD = "#FFFFFF";
 const PURPLE = "#403557";
 
 const ReflectionField = ({ label, placeholder, value, onChangeText, maxLength, editable }) => {
+  const [isFocused, setIsFocused] = useState(false);
+
   return (
     <View style={styles.card}>
       <Text style={styles.label}>{label}</Text>
-
       {editable ? (
         <>
           <TextInput
-            style={styles.textArea}
+            style={[styles.textArea, isFocused && styles.textAreaFocused]}
             value={value}
             onChangeText={onChangeText}
             placeholder={placeholder}
@@ -21,6 +23,8 @@ const ReflectionField = ({ label, placeholder, value, onChangeText, maxLength, e
             multiline
             maxLength={maxLength}
             textAlignVertical="top"
+            onFocus={() => setIsFocused(true)}
+            onBlur={() => setIsFocused(false)}
           />
           <Text style={styles.charCount}>
             {value.length}/{maxLength}
@@ -52,13 +56,6 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     letterSpacing: 0.3,
   },
-  textArea: {
-    fontSize: 14,
-    color: TEXT,
-    minHeight: 100,
-    textAlignVertical: "top",
-    paddingTop: 4,
-  },
   value: {
     fontSize: 14,
     color: TEXT,
@@ -70,6 +67,20 @@ const styles = StyleSheet.create({
     color: MUTED,
     textAlign: "right",
     marginTop: 4,
+  },
+  textArea: {
+    fontSize: 14,
+    color: TEXT,
+    minHeight: 100,
+    textAlignVertical: "top",
+    paddingTop: 4,
+    borderWidth: 1,
+    borderColor: "#E2E4EE",
+    borderRadius: 8,
+    paddingHorizontal: 8,
+  },
+  textAreaFocused: {
+    borderColor: PURPLE,
   },
 });
 
