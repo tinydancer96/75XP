@@ -1,5 +1,11 @@
-import { Text } from "react-native";
-
+import { Text, View } from "react-native";
+import Achievements from "../components/Achievements";
 export default function Profile() {
-  return <Text>Profile Page</Text>;
+  return (
+    <View>
+      <View>
+        <Achievements />
+      </View>
+    </View>
+  );
 }
