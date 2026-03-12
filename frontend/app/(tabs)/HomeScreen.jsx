@@ -81,7 +81,11 @@ export default function HomeScreen() {
         {TASKS.map((task) => {
           const done = checked[task.key];
           return (
-            <View key={task.key} style={styles.card}>
+            <TouchableOpacity
+              key={task.key}
+              style={styles.card}
+              onPress={() => toggle(task.key)}
+              activeOpacity={0.85}>
               <View style={styles.cardLeft}>
                 <Text style={styles.cardEmoji}>{task.emoji}</Text>
                 <View style={styles.cardText}>
@@ -96,7 +100,10 @@ export default function HomeScreen() {
                     {photo && <Image source={{ uri: photo }} style={styles.photoPreview} />}
                     <TouchableOpacity
                       style={styles.uploadBtn}
-                      onPress={pickImage}
+                      onPress={(e) => {
+                        e.stopPropagation();
+                        pickImage();
+                      }}
                       activeOpacity={0.8}>
                       <Text style={styles.uploadBtnText}>{photo ? "Change" : "Upload"}</Text>
                     </TouchableOpacity>
@@ -105,12 +112,15 @@ export default function HomeScreen() {
 
                 <TouchableOpacity
                   style={[styles.checkbox, done && styles.checkboxDone]}
-                  onPress={() => toggle(task.key)}
+                  onPress={(e) => {
+                    e.stopPropagation();
+                    toggle(task.key);
+                  }}
                   activeOpacity={0.8}>
                   {done && <Text style={styles.checkmark}>✓</Text>}
                 </TouchableOpacity>
               </View>
-            </View>
+            </TouchableOpacity>
           );
         })}
 
