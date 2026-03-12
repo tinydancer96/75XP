@@ -28,10 +28,16 @@ const TASKS = [
 export default function HomeScreen() {
   const [checked, setChecked] = useState(Object.fromEntries(TASKS.map((t) => [t.key, false])));
   const [photo, setPhoto] = useState(null);
+  const [submitted, setSubmitted] = useState(false);
 
-  const toggle = (key) => setChecked((prev) => ({ ...prev, [key]: !prev[key] }));
+  const toggle = (key) => {
+    if (submitted) return;
+    setChecked((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
 
   const pickImage = async () => {
+    if (submitted) return;
+
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
     if (!permissionResult.granted) {
@@ -48,6 +54,22 @@ export default function HomeScreen() {
     if (!result.canceled) {
       setPhoto(result.assets[0].uri);
     }
+  };
+
+  const handleSubmit = () => {
+    const payload = {
+      day_number: DAY_NUMBER,
+      diet_adhered: checked.diet,
+      outdoor_workout_completed: checked.outdoorWorkout,
+      indoor_workout_completed: checked.indoorWorkout,
+      water_consumed: checked.water,
+      reading_completed: checked.reading,
+      reflection_completed: checked.reflection,
+      progress_pic: photo,
+    };
+
+    console.log("Submitting day:", payload);
+    setSubmitted(true);
   };
 
   const completedCount = Object.values(checked).filter(Boolean).length;
@@ -83,9 +105,9 @@ export default function HomeScreen() {
           return (
             <TouchableOpacity
               key={task.key}
-              style={styles.card}
+              style={[styles.card, submitted && styles.cardLocked]}
               onPress={() => toggle(task.key)}
-              activeOpacity={0.85}>
+              activeOpacity={submitted ? 1 : 0.85}>
               <View style={styles.cardLeft}>
                 <Text style={styles.cardEmoji}>{task.emoji}</Text>
                 <View style={styles.cardText}>
@@ -98,25 +120,31 @@ export default function HomeScreen() {
                 {task.key === "progressPhoto" && (
                   <View style={styles.photoContainer}>
                     {photo && <Image source={{ uri: photo }} style={styles.photoPreview} />}
-                    <TouchableOpacity
-                      style={styles.uploadBtn}
-                      onPress={(e) => {
-                        e.stopPropagation();
-                        pickImage();
-                      }}
-                      activeOpacity={0.8}>
-                      <Text style={styles.uploadBtnText}>{photo ? "Change" : "Upload"}</Text>
-                    </TouchableOpacity>
+                    {!submitted && (
+                      <TouchableOpacity
+                        style={styles.uploadBtn}
+                        onPress={(e) => {
+                          e.stopPropagation();
+                          pickImage();
+                        }}
+                        activeOpacity={0.8}>
+                        <Text style={styles.uploadBtnText}>{photo ? "Change" : "Upload"}</Text>
+                      </TouchableOpacity>
+                    )}
                   </View>
                 )}
 
                 <TouchableOpacity
-                  style={[styles.checkbox, done && styles.checkboxDone]}
+                  style={[
+                    styles.checkbox,
+                    done && styles.checkboxDone,
+                    submitted && styles.checkboxLocked,
+                  ]}
                   onPress={(e) => {
                     e.stopPropagation();
                     toggle(task.key);
                   }}
-                  activeOpacity={0.8}>
+                  activeOpacity={submitted ? 1 : 0.8}>
                   {done && <Text style={styles.checkmark}>✓</Text>}
                 </TouchableOpacity>
               </View>
@@ -124,9 +152,15 @@ export default function HomeScreen() {
           );
         })}
 
-        {allDone && (
-          <View style={styles.allDoneBanner}>
-            <Text style={styles.allDoneText}>🎉 Day complete. Keep going.</Text>
+        {allDone && !submitted && (
+          <TouchableOpacity style={styles.submitBtn} onPress={handleSubmit} activeOpacity={0.85}>
+            <Text style={styles.submitBtnText}>Complete Day →</Text>
+          </TouchableOpacity>
+        )}
+
+        {submitted && (
+          <View style={styles.submittedBanner}>
+            <Text style={styles.submittedText}>✓ Day Submitted</Text>
           </View>
         )}
 
@@ -142,6 +176,7 @@ const BG = "#F7F8FC";
 const CARD = "#FFFFFF";
 const MUTED = "#9A9AAF";
 const TEXT = "#1A1A2E";
+const SUCCESS = "#22C55E";
 
 const styles = StyleSheet.create({
   safe: {
@@ -229,6 +264,9 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
     elevation: 3,
   },
+  cardLocked: {
+    opacity: 0.5,
+  },
   cardLeft: {
     flexDirection: "row",
     alignItems: "center",
@@ -296,21 +334,37 @@ const styles = StyleSheet.create({
     backgroundColor: ACCENT,
     borderColor: ACCENT,
   },
+  checkboxLocked: {
+    borderColor: MUTED,
+  },
   checkmark: {
     color: "#FFFFFF",
     fontSize: 14,
     fontWeight: "700",
     lineHeight: 18,
   },
-  allDoneBanner: {
-    backgroundColor: "#EEF1FE",
+  submitBtn: {
+    backgroundColor: ACCENT,
+    borderRadius: 12,
+    paddingVertical: 16,
+    alignItems: "center",
+    marginTop: 4,
+  },
+  submitBtnText: {
+    color: "#FFFFFF",
+    fontWeight: "700",
+    fontSize: 15,
+    letterSpacing: 0.3,
+  },
+  submittedBanner: {
+    backgroundColor: "#DCFCE7",
     borderRadius: 12,
     paddingVertical: 14,
     alignItems: "center",
     marginTop: 4,
   },
-  allDoneText: {
-    color: ACCENT,
+  submittedText: {
+    color: SUCCESS,
     fontWeight: "600",
     fontSize: 14,
     letterSpacing: 0.2,
