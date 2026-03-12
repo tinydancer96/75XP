@@ -1,7 +1,8 @@
-import { ScrollView, Text, StyleSheet, View, TouchableOpacity } from "react-native";
+import { ScrollView, Text, StyleSheet, View } from "react-native";
 import { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import MoodTracker from "../components/MoodTracker";
+import ReflectionField from "../components/ReflectionField";
 
 const mockReflection = {
   id: 1,
@@ -20,8 +21,11 @@ const CARD = "#FFFFFF";
 const MUTED = "#9A9AAF";
 const TEXT = "#1A1A2E";
 
-export default function Reflections() {
+const Reflections = () => {
   const [mood, setMood] = useState(mockReflection.mood_rating);
+  const [achievements, setAchievements] = useState(mockReflection.achievements);
+  const [challenges, setChallenges] = useState(mockReflection.challenges);
+  const [nextDayFocus, setNextDayFocus] = useState(mockReflection.next_day_focus);
 
   return (
     <SafeAreaView style={styles.safe}>
@@ -36,10 +40,34 @@ export default function Reflections() {
         indicatorStyle="black"
       >
         <MoodTracker mood={mood} onSelect={setMood} isLocked={!!mockReflection.mood_rating} />
+        <ReflectionField
+          label="Achievements"
+          placeholder="What have you achieved today?"
+          value={achievements}
+          onChangeText={setAchievements}
+          maxLength={500}
+          editable={true}
+        />
+        <ReflectionField
+          label="Challenges"
+          placeholder="What challenges did you face today?"
+          value={challenges}
+          onChangeText={setChallenges}
+          maxLength={500}
+          editable={false}
+        />
+        <ReflectionField
+          label="Next Day Focus"
+          placeholder="What do you want to focus on tomorrow?"
+          value={nextDayFocus}
+          onChangeText={setNextDayFocus}
+          maxLength={500}
+          editable={false}
+        />
       </ScrollView>
     </SafeAreaView>
   );
-}
+};
 
 const styles = StyleSheet.create({
   safe: {
@@ -70,3 +98,5 @@ const styles = StyleSheet.create({
     gap: 16,
   },
 });
+
+export default Reflections;
