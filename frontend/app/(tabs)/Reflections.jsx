@@ -8,17 +8,14 @@ import { PaperProvider, Button } from "react-native-paper";
 const mockReflection = {
   id: 1,
   day_id: 1,
-  mood_rating: 2,
+  mood_rating: null,
   achievements: "Completed my workout and drank all my water.",
   challenges: "Struggled to stay off my phone in the evening.",
   next_day_focus: "Get to bed before 11pm and prep meals.",
   created_at: "2025-03-10T21:00:00.000Z",
 };
 
-const PURPLE = "#403557";
-const BLUE = "#70add9";
 const BG = "#F7F8FC";
-const CARD = "#FFFFFF";
 const MUTED = "#9A9AAF";
 const TEXT = "#1A1A2E";
 
@@ -28,6 +25,19 @@ const Reflections = () => {
   const [achievements, setAchievements] = useState(mockReflection.achievements);
   const [challenges, setChallenges] = useState(mockReflection.challenges);
   const [nextDayFocus, setNextDayFocus] = useState(mockReflection.next_day_focus);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSave = async () => {
+    setIsLoading(true);
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      console.log("saved!");
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <PaperProvider>
@@ -76,7 +86,9 @@ const Reflections = () => {
             {!hasReflection && (
               <Button
                 mode="contained"
-                onPress={() => console.log("submitted")}
+                onPress={handleSave}
+                disabled={isLoading}
+                loading={isLoading}
                 style={{ marginTop: 8, marginBottom: 24 }}
               >
                 Save
