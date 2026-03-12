@@ -27,7 +27,7 @@ const ReflectionField = ({ label, placeholder, value, onChangeText, maxLength, e
             onBlur={() => setIsFocused(false)}
           />
           <Text style={styles.charCount}>
-            {value.length}/{maxLength}
+            {(value || "").length}/{maxLength}
           </Text>
         </>
       ) : (

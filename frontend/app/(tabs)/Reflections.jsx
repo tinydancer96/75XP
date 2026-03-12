@@ -8,7 +8,7 @@ import { PaperProvider, Button } from "react-native-paper";
 const mockReflection = {
   id: 1,
   day_id: 1,
-  mood_rating: null,
+  mood_rating: 3,
   achievements: "Completed my workout and drank all my water.",
   challenges: "Struggled to stay off my phone in the evening.",
   next_day_focus: "Get to bed before 11pm and prep meals.",
