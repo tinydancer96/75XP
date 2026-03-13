@@ -1,12 +1,12 @@
-import React, { useState } from "react";
-import { View, Text, TouchableOpacity, ScrollView, SafeAreaView, Alert } from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, Text, TouchableOpacity, ScrollView, SafeAreaView, Alert, Image } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import TaskCard from "../components/TaskCard";
 import DayProgress from "../components/DayProgress";
+import LoginModal from "../components/LoginModal";
+import logo from "../assets/logo.png";
 
-const DAY_NUMBER = 7;
 const TOTAL_DAYS = 75;
-
 const TASKS = [
   { key: "diet", label: "Diet", emoji: "🥗", subtitle: "Stick to your plan, no cheat meals" },
   {
@@ -32,6 +32,17 @@ export default function HomeScreen() {
   const [checked, setChecked] = useState(Object.fromEntries(TASKS.map((t) => [t.key, false])));
   const [photo, setPhoto] = useState(null);
   const [submitted, setSubmitted] = useState(false);
+  const [loginVisible, setLoginVisible] = useState(false);
+  const [dayNumber, setDayNumber] = useState(1);
+
+  useEffect(() => {
+    const fetchDay = async () => {
+      // simulate API call
+      const fetchedDay = 7;
+      setDayNumber(fetchedDay);
+    };
+    fetchDay();
+  }, []);
 
   const toggle = (key) => {
     if (submitted) return;
@@ -55,7 +66,7 @@ export default function HomeScreen() {
 
   const handleSubmit = () => {
     const payload = {
-      day_number: DAY_NUMBER,
+      day_number: dayNumber,
       diet_adhered: checked.diet,
       outdoor_workout_completed: checked.outdoorWorkout,
       indoor_workout_completed: checked.indoorWorkout,
@@ -73,41 +84,50 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#F7F8FC" }}>
-      {/* Header row: Login + Day Badge */}
+      <LoginModal visible={loginVisible} onClose={() => setLoginVisible(false)} />
+
       <View
         style={{
           flexDirection: "row",
           justifyContent: "space-between",
+          alignItems: "center",
           paddingHorizontal: 20,
           paddingTop: 16,
           paddingBottom: 12,
         }}>
         <TouchableOpacity
+          onPress={() => setLoginVisible(true)}
           style={{
             backgroundColor: NAVY,
-            paddingHorizontal: 18,
             paddingVertical: 8,
+            paddingHorizontal: 18,
             borderRadius: 8,
+            justifyContent: "center",
+            alignItems: "center",
           }}>
-          <Text style={{ color: "#FFF", fontSize: 13, fontWeight: "600", letterSpacing: 0.4 }}>
+          <Text style={{ color: "#FFF", fontSize: 14, fontWeight: "600", letterSpacing: 0.4 }}>
             Login
           </Text>
         </TouchableOpacity>
 
-        <View style={{ alignItems: "flex-end" }}>
-          <Text style={{ fontSize: 22, fontWeight: "700", color: TEXT, letterSpacing: -0.5 }}>
-            Day {DAY_NUMBER}
-          </Text>
-          <Text style={{ fontSize: 12, color: MUTED, fontWeight: "500", marginTop: -2 }}>
-            of {TOTAL_DAYS}
-          </Text>
-        </View>
+        <Image
+          source={logo}
+          resizeMode="contain"
+          style={{
+            width: 130,
+            height: 48,
+          }}
+        />
       </View>
 
-      {/* Progress Bar */}
-      <DayProgress completedCount={completedCount} totalTasks={TASKS.length} />
+      {/* DayProgress Bar */}
+      <DayProgress
+        completedCount={completedCount}
+        totalTasks={TASKS.length}
+        dayNumber={dayNumber}
+        totalDays={TOTAL_DAYS}
+      />
 
-      {/* Task List */}
       <ScrollView
         contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 4, gap: 12 }}
         showsVerticalScrollIndicator={false}>
