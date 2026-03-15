@@ -1,8 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
-
-const ACCENT = "#4F6EF7";
-const MUTED = "#9A9AAF";
+import { ACCENT, MUTED, TEXT, fontSizes, fontWeights } from "../styles/global";
 
 export default function DayProgress({ completedCount, totalTasks, dayNumber, totalDays }) {
   const percent = (completedCount / totalTasks) * 100;
@@ -13,9 +11,11 @@ export default function DayProgress({ completedCount, totalTasks, dayNumber, tot
         <Text style={styles.dayNumber}>Day {dayNumber}</Text>
         <Text style={styles.totalDays}>of {totalDays}</Text>
       </View>
+
       <View style={styles.progressTrack}>
         <View style={[styles.progressFill, { width: `${percent}%` }]} />
       </View>
+
       <Text style={styles.progressLabel}>
         {completedCount}/{totalTasks} complete
       </Text>
@@ -36,13 +36,13 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
   },
   dayNumber: {
-    fontSize: 22,
-    fontWeight: "700",
-    color: "#1A1A2E",
+    fontSize: fontSizes.xl,
+    fontWeight: fontWeights.bold,
+    color: TEXT,
   },
   totalDays: {
-    fontSize: 12,
-    fontWeight: "500",
+    fontSize: fontSizes.sm,
+    fontWeight: fontWeights.medium,
     color: MUTED,
     marginTop: -2,
   },
@@ -59,9 +59,9 @@ const styles = StyleSheet.create({
     borderRadius: 99,
   },
   progressLabel: {
-    fontSize: 12,
+    fontSize: fontSizes.sm,
     color: MUTED,
-    fontWeight: "500",
+    fontWeight: fontWeights.medium,
     minWidth: 70,
     textAlign: "right",
   },

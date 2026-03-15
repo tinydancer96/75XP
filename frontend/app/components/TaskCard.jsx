@@ -1,16 +1,22 @@
 import React from "react";
 import { View, Text, TouchableOpacity, Image, StyleSheet } from "react-native";
+import { baseCard, ACCENT, MUTED, fontSizes, fontWeights } from "../styles/global";
 
-const ACCENT = "#4F6EF7";
-const MUTED = "#9A9AAF";
-const CARD = "#FFFFFF";
-
+/**
+ * TaskCard — the core interactive row card for the app.
+ *
+ * Teammates: this card pattern (white, rounded, elevated) is the standard
+ * container for the whole app. The baseCard style from global.js gives you
+ * the same shadow/radius/bg — import it for reflection fields, achievement
+ * boxes, book cards, anything card-shaped. See app/styles/global.js.
+ */
 export default function TaskCard({ task, done, submitted, photo, toggle, pickImage }) {
   return (
     <TouchableOpacity
-      style={[styles.card, submitted && styles.cardLocked]}
+      style={[baseCard.card, styles.card, submitted && styles.cardLocked]}
       onPress={() => toggle(task.key)}
       activeOpacity={submitted ? 1 : 0.85}>
+      {/* Left: emoji + label + subtitle */}
       <View style={styles.cardLeft}>
         <Text style={styles.cardEmoji}>{task.emoji}</Text>
         <View style={styles.cardText}>
@@ -19,6 +25,7 @@ export default function TaskCard({ task, done, submitted, photo, toggle, pickIma
         </View>
       </View>
 
+      {/* Right: optional photo upload + checkbox */}
       <View style={styles.cardRight}>
         {task.key === "progressPhoto" && (
           <View style={styles.photoContainer}>
@@ -44,7 +51,7 @@ export default function TaskCard({ task, done, submitted, photo, toggle, pickIma
             toggle(task.key);
           }}
           activeOpacity={submitted ? 1 : 0.8}>
-          {done && <Text style={styles.checkmark}>✓</Text>}
+          {done && <Text style={styles.checkmark}>✔</Text>}
         </TouchableOpacity>
       </View>
     </TouchableOpacity>
@@ -53,36 +60,66 @@ export default function TaskCard({ task, done, submitted, photo, toggle, pickIma
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: CARD,
-    borderRadius: 14,
-    paddingVertical: 16,
-    paddingHorizontal: 16,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.07,
-    shadowRadius: 10,
-    elevation: 3,
   },
-  cardLocked: { opacity: 0.5 },
-  cardLeft: { flexDirection: "row", alignItems: "center", flex: 1, gap: 14 },
-  cardEmoji: { fontSize: 24 },
-  cardText: { flex: 1 },
-  cardLabel: { fontSize: 15, fontWeight: "600", color: "#1A1A2E", letterSpacing: -0.2 },
-  cardLabelDone: { color: MUTED, textDecorationLine: "line-through" },
-  cardSubtitle: { fontSize: 12, color: MUTED, marginTop: 2 },
-  cardRight: { flexDirection: "row", alignItems: "center", gap: 10 },
-  photoContainer: { flexDirection: "row", alignItems: "center", gap: 8 },
-  photoPreview: { width: 36, height: 36, borderRadius: 6 },
+  cardLocked: {
+    opacity: 0.5,
+  },
+  cardLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+    flex: 1,
+    gap: 14,
+  },
+  cardEmoji: {
+    fontSize: 24,
+  },
+  cardText: {
+    flex: 1,
+  },
+  cardLabel: {
+    fontSize: fontSizes.md,
+    fontWeight: fontWeights.semibold,
+    color: "#1A1A2E",
+    letterSpacing: -0.2,
+  },
+  cardLabelDone: {
+    color: MUTED,
+    textDecorationLine: "line-through",
+  },
+  cardSubtitle: {
+    fontSize: fontSizes.sm,
+    color: MUTED,
+    marginTop: 2,
+  },
+  cardRight: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+  },
+  photoContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  photoPreview: {
+    width: 36,
+    height: 36,
+    borderRadius: 6,
+  },
   uploadBtn: {
     backgroundColor: "#EEF1FE",
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 7,
   },
-  uploadBtnText: { color: ACCENT, fontSize: 12, fontWeight: "600" },
+  uploadBtnText: {
+    color: ACCENT,
+    fontSize: fontSizes.sm,
+    fontWeight: fontWeights.semibold,
+  },
   checkbox: {
     width: 26,
     height: 26,
@@ -93,7 +130,17 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     backgroundColor: "#FFFFFF",
   },
-  checkboxDone: { backgroundColor: ACCENT, borderColor: ACCENT },
-  checkboxLocked: { borderColor: MUTED },
-  checkmark: { color: "#FFFFFF", fontSize: 14, fontWeight: "700", lineHeight: 18 },
+  checkboxDone: {
+    backgroundColor: ACCENT,
+    borderColor: ACCENT,
+  },
+  checkboxLocked: {
+    borderColor: MUTED,
+  },
+  checkmark: {
+    color: "#FFFFFF",
+    fontSize: 14,
+    fontWeight: fontWeights.bold,
+    lineHeight: 18,
+  },
 });
