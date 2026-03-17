@@ -1,25 +1,9 @@
-import {
-  View,
-  StyleSheet,
-  Dimensions,
-  ImageBackground,
-  ScrollView,
-  Pressable,
-} from "react-native";
+import { View, StyleSheet, Dimensions, ImageBackground, ScrollView, Pressable } from "react-native";
 
 import { useState } from "react";
 
 import { Ionicons } from "@react-native-vector-icons/ionicons";
-
-const mockReflection = {
-  id: 1,
-  day_id: 1,
-  mood_rating: 3,
-  achievements: "Completed my workout and drank all my water.",
-  challenges: "Struggled to stay off my phone in the evening.",
-  next_day_focus: "Get to bed before 11pm and prep meals.",
-  created_at: "2025-03-10T21:00:00.000Z",
-};
+import ReflectionModal from "./ReflectionModal";
 
 export default function MapNodes({ imgWidth, imgHeight }) {
   const [press, setPress] = useState(false);
@@ -47,12 +31,13 @@ export default function MapNodes({ imgWidth, imgHeight }) {
     {
       row: 30,
       col: 3,
-      component: (
+      component: ({ dayId, userId }) => (
         <Pressable onPress={nodePressed}>
           {press ? (
-            <Ionicons name="radio-button-on-outline" size={30} color="red" />
+            // <Ionicons name="radio-button-on-outline" size={22} color="red" />
+            <ReflectionModal dayId={dayId} userId={userId} />
           ) : (
-            <Ionicons name="radio-button-off-outline" size={30} color="red" />
+            <Ionicons name="radio-button-off-outline" size={22} color="red" />
           )}
         </Pressable>
       ),
@@ -60,9 +45,9 @@ export default function MapNodes({ imgWidth, imgHeight }) {
   ];
   return (
     <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
-      {gridItems.map(({ row, col, component }, index) => (
+      {gridItems.map(({ row, col, component: Component }, index) => (
         <View key={index} style={toCell(row, col)}>
-          {component}
+          <Component dayId={index + 1} userId={1} />
         </View>
       ))}
     </View>
