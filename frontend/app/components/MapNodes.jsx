@@ -1,5 +1,6 @@
 import { View, StyleSheet } from "react-native";
 import ReflectionModal from "./ReflectionModal";
+import { mockReflections } from "../mockData/reflectionsData";
 
 export default function MapNodes({ imgWidth, imgHeight }) {
   const columns = 10;
@@ -8,6 +9,7 @@ export default function MapNodes({ imgWidth, imgHeight }) {
   const cellWidth = imgWidth / columns;
   const cellHeight = imgHeight / rows;
 
+  const latestDayId = Math.max(...mockReflections.map((r) => r.day_id));
   const toCell = (row, col) => ({
     position: "absolute",
     left: (col - 1) * cellWidth,
@@ -91,16 +93,20 @@ export default function MapNodes({ imgWidth, imgHeight }) {
     { dayId: 70, row: 11, col: 4 },
     { dayId: 71, row: 10, col: 5 },
     { dayId: 72, row: 9, col: 6 },
-    { dayId: 73, row: 8, col: 7 },
-    { dayId: 74, row: 7, col: 8 },
-    { dayId: 75, row: 6, col: 7 },
+    { dayId: 73, row: 8, col: 6 },
+    { dayId: 74, row: 7, col: 6 },
+    { dayId: 75, row: 5, col: 6 },
   ];
 
   return (
     <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
       {gridItems.map(({ dayId, row, col }) => (
         <View key={dayId} style={toCell(row, col)}>
-          <ReflectionModal dayId={dayId} userId={1} />
+          <ReflectionModal
+            dayId={dayId}
+            userId={1}
+            isLatest={dayId === latestDayId}
+          />
         </View>
       ))}
     </View>
