@@ -2,21 +2,14 @@ import React from "react";
 import { View, Text, TouchableOpacity, Image, StyleSheet } from "react-native";
 import { baseCard, ACCENT, MUTED, fontSizes, fontWeights } from "../styles/global";
 
-/**
- * TaskCard — the core interactive row card for the app.
- *
- * Teammates: this card pattern (white, rounded, elevated) is the standard
- * container for the whole app. The baseCard style from global.js gives you
- * the same shadow/radius/bg — import it for reflection fields, achievement
- * boxes, book cards, anything card-shaped. See app/styles/global.js.
- */
-export default function TaskCard({ task, done, submitted, photo, toggle, pickImage }) {
+export default function TaskCard({ task, done, submitted, locked, photo, toggle, pickImage }) {
+  const isDisabled = submitted || locked;
+
   return (
     <TouchableOpacity
-      style={[baseCard.card, styles.card, submitted && styles.cardLocked]}
+      style={[baseCard.card, styles.card, isDisabled && styles.cardLocked]}
       onPress={() => toggle(task.key)}
-      activeOpacity={submitted ? 1 : 0.85}>
-      {/* Left: emoji + label + subtitle */}
+      activeOpacity={isDisabled ? 1 : 0.85}>
       <View style={styles.cardLeft}>
         <Text style={styles.cardEmoji}>{task.emoji}</Text>
         <View style={styles.cardText}>
@@ -25,12 +18,11 @@ export default function TaskCard({ task, done, submitted, photo, toggle, pickIma
         </View>
       </View>
 
-      {/* Right: optional photo upload + checkbox */}
       <View style={styles.cardRight}>
         {task.key === "progressPhoto" && (
           <View style={styles.photoContainer}>
             {photo && <Image source={{ uri: photo }} style={styles.photoPreview} />}
-            {!submitted && (
+            {!isDisabled && (
               <TouchableOpacity
                 style={styles.uploadBtn}
                 onPress={(e) => {
@@ -45,13 +37,17 @@ export default function TaskCard({ task, done, submitted, photo, toggle, pickIma
         )}
 
         <TouchableOpacity
-          style={[styles.checkbox, done && styles.checkboxDone, submitted && styles.checkboxLocked]}
+          style={[
+            styles.checkbox,
+            done && styles.checkboxDone,
+            isDisabled && styles.checkboxLocked,
+          ]}
           onPress={(e) => {
             e.stopPropagation();
             toggle(task.key);
           }}
-          activeOpacity={submitted ? 1 : 0.8}>
-          {done && <Text style={styles.checkmark}>✔</Text>}
+          activeOpacity={isDisabled ? 1 : 0.8}>
+          {done && <Text style={styles.checkmark}>✓</Text>}
         </TouchableOpacity>
       </View>
     </TouchableOpacity>
@@ -65,7 +61,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   cardLocked: {
-    opacity: 0.5,
+    opacity: 0.45,
   },
   cardLeft: {
     flexDirection: "row",

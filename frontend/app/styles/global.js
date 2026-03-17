@@ -53,10 +53,7 @@ export const fontWeights = {
   bold: "700",
 };
 
-// Shared StyleSheets
 // baseCard - white rounded elevated container, the core card pattern for the app.
-// Usage: import { baseCard } from "../styles/global";
-//        <View style={baseCard.card}> ... </View>
 
 export const baseCard = StyleSheet.create({
   card: {
