@@ -9,11 +9,11 @@ import {
 
 import MapNodes from "../components/MapNodes";
 
-const image = require("../assets/mountain-peak-with-path-for-a-mobile-game (1).jpeg");
+const image = require("../assets/mountain-peak-with-sun.jpeg");
 const { width } = Dimensions.get("window");
 
 const imgWidth = width;
-const imgHeight = width * 7;
+const imgHeight = width * 8;
 
 export default function GridOverlay() {
   return (
