@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { Modal, View, TouchableOpacity, Text, StyleSheet } from "react-native";
 import { VideoView, useVideoPlayer } from "expo-video";
+import { useEventListener } from "expo";
 
 const ACCENT = "#4F6EF7";
 const SOURCE = require("../assets/add-a-character-in-a-hot-air-balloon-floating-upwa.mp4");
@@ -16,6 +17,10 @@ export default function SubmitSuccessModal({ visible, onClose }) {
     }
   }, [visible]);
 
+  useEventListener(player, "playToEnd", () => {
+    onClose();
+  });
+
   return (
     <Modal visible={visible} transparent animationType="fade">
       <View style={styles.overlay}>
@@ -26,15 +31,11 @@ export default function SubmitSuccessModal({ visible, onClose }) {
             contentFit="contain"
             nativeControls={false}
           />
-          <TouchableOpacity style={styles.closeBtn} onPress={onClose}>
-            <Text style={styles.closeBtnText}>Continue</Text>
-          </TouchableOpacity>
         </View>
       </View>
     </Modal>
   );
 }
-
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
@@ -45,14 +46,14 @@ const styles = StyleSheet.create({
   modal: {
     width: "100%",
     height: "100%",
-    backgroundColor: "#fff",
+    backgroundColor: "#000",
     justifyContent: "center",
     alignItems: "center",
-    paddingHorizontal: 24,
-    gap: 16,
   },
-  video: { width: "100%", aspectRatio: 1 },
+  video: { width: "100%", height: "100%" },
   closeBtn: {
+    position: "absolute",
+    bottom: 40,
     backgroundColor: ACCENT,
     paddingHorizontal: 32,
     paddingVertical: 12,

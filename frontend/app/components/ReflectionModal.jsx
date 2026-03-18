@@ -1,4 +1,4 @@
-import { Ionicons } from "@react-native-vector-icons/ionicons";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { View, Modal, StyleSheet, Pressable, Text, ScrollView, Animated } from "react-native";
 import { useState, useEffect, useRef } from "react";
 import { mockReflections } from "../mockData/reflectionsData";
@@ -59,10 +59,10 @@ export default function ReflectionModal({ dayId, userId, isLatest }) {
                 ]}
               />
             )}
-            <Ionicons name="radio-button-on-outline" size={30} color="#fbe268" />
+            <Ionicons name="radio-button-on" size={30} color="#fbe268" />
           </View>
         ) : (
-          <Ionicons name="radio-button-on-outline" size={30} color="#9e9898" />
+          <Ionicons name="radio-button-on" size={30} color="#9e9898" />
         )}
       </Pressable>
 
