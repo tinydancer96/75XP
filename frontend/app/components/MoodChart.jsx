@@ -1,4 +1,4 @@
-import { View, Text, Dimensions, StyleSheet } from "react-native";
+import { View, Text, Dimensions, StyleSheet, ScrollView } from "react-native";
 import { LineChart } from "react-native-chart-kit";
 
 const screenWidth = Dimensions.get("window").width;
@@ -18,6 +18,7 @@ export default function MoodChart() {
         height={220}
         fromZero
         yAxisInterval={1}
+        style={{ marginVertical: 20 }}
         chartConfig={{
           backgroundColor: "#fff",
           backgroundGradientFrom: "#fff",
@@ -45,5 +46,8 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     marginBottom: 20,
+  },
+  legend: {
+    marginTop: 20,
   },
 });
