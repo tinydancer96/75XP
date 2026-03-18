@@ -9,7 +9,8 @@ export default function TaskCard({ task, done, submitted, locked, photo, toggle,
     <TouchableOpacity
       style={[baseCard.card, styles.card, isDisabled && styles.cardLocked]}
       onPress={() => toggle(task.key)}
-      activeOpacity={isDisabled ? 1 : 0.85}>
+      activeOpacity={submitted ? 1 : 0.85}
+    >
       <View style={styles.cardLeft}>
         <Text style={styles.cardEmoji}>{task.emoji}</Text>
         <View style={styles.cardText}>
@@ -29,7 +30,8 @@ export default function TaskCard({ task, done, submitted, locked, photo, toggle,
                   e.stopPropagation();
                   pickImage();
                 }}
-                activeOpacity={0.8}>
+                activeOpacity={0.8}
+              >
                 <Text style={styles.uploadBtnText}>{photo ? "Change" : "Upload"}</Text>
               </TouchableOpacity>
             )}
@@ -46,7 +48,8 @@ export default function TaskCard({ task, done, submitted, locked, photo, toggle,
             e.stopPropagation();
             toggle(task.key);
           }}
-          activeOpacity={isDisabled ? 1 : 0.8}>
+          activeOpacity={submitted ? 1 : 0.8}
+        >
           {done && <Text style={styles.checkmark}>✓</Text>}
         </TouchableOpacity>
       </View>

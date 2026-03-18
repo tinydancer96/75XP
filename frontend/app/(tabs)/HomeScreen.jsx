@@ -14,13 +14,13 @@ import {
 } from "react-native";
 import DayProgress from "../components/DayProgress";
 import LoginModal from "../components/LoginModal";
+import SubmitSuccessModal from "../components/SubmitSuccessModal";
 import TaskCard from "../components/TaskCard";
 import {
   ACCENT,
   BG,
   DANGER,
   MUTED,
-  NAVY,
   SUCCESS,
   baseCard,
   fontSizes,
@@ -85,11 +85,11 @@ export default function HomeScreen() {
   const [accessToken, setAccessToken] = useState(null);
   const [dayNumber, setDayNumber] = useState(1);
   const [apiStatus, setApiStatus] = useState("checking...");
+  const [showAnimation, setShowAnimation] = useState(false);
 
   const midnightTimerRef = useRef(null);
   const midnightIntervalRef = useRef(null);
 
-  // For testing API status (temporary)
   useEffect(() => {
     fetch(`${BASE_URL}/api/version`)
       .then((res) => res.json())
@@ -299,6 +299,7 @@ export default function HomeScreen() {
       }
 
       setSubmitted(true);
+      setShowAnimation(true);
       await saveUserDayState(user.id, checked, photo, true);
     } catch (err) {
       console.warn("Submit error:", err);
@@ -369,7 +370,8 @@ export default function HomeScreen() {
           <TouchableOpacity
             style={[styles.submitBtn, !allDone && styles.submitBtnDisabled]}
             onPress={allDone ? handleSubmit : undefined}
-            activeOpacity={allDone ? 0.85 : 1}>
+            activeOpacity={allDone ? 0.85 : 1}
+          >
             <Text style={styles.submitBtnText}>
               {allDone ? "Complete Day ✓" : `${completedCount}/${TASKS.length} tasks complete`}
             </Text>
@@ -384,6 +386,8 @@ export default function HomeScreen() {
 
         <View style={{ height: 24 }} />
       </ScrollView>
+
+      <SubmitSuccessModal visible={showAnimation} onClose={() => setShowAnimation(false)} />
     </SafeAreaView>
   );
 }
