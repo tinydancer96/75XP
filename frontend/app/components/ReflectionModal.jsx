@@ -1,13 +1,5 @@
-import { Ionicons } from "@react-native-vector-icons/ionicons";
-import {
-  View,
-  Modal,
-  StyleSheet,
-  Pressable,
-  Text,
-  ScrollView,
-  Animated,
-} from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { View, Modal, StyleSheet, Pressable, Text, ScrollView, Animated } from "react-native";
 import { useState, useEffect, useRef } from "react";
 import { mockReflections } from "../mockData/reflectionsData";
 
@@ -15,9 +7,7 @@ export default function ReflectionModal({ dayId, userId, isLatest }) {
   const [visible, setVisible] = useState(false);
   const pulseAnim = useRef(new Animated.Value(1)).current;
 
-  const user = mockReflections.find(
-    (entry) => entry.day_id === dayId && entry.user_id === userId,
-  );
+  const user = mockReflections.find((entry) => entry.day_id === dayId && entry.user_id === userId);
 
   const hasReflection = !!user;
 
@@ -69,11 +59,7 @@ export default function ReflectionModal({ dayId, userId, isLatest }) {
                 ]}
               />
             )}
-            <Ionicons
-              name="radio-button-on-outline"
-              size={30}
-              color="#fbe268"
-            />
+            <Ionicons name="radio-button-on-outline" size={30} color="#fbe268" />
           </View>
         ) : (
           <Ionicons name="radio-button-on-outline" size={30} color="#9e9898" />
@@ -97,10 +83,7 @@ export default function ReflectionModal({ dayId, userId, isLatest }) {
               </View>
               <Pressable
                 onPress={() => setVisible(false)}
-                style={({ pressed }) => [
-                  styles.closeBtn,
-                  pressed && styles.closeBtnPressed,
-                ]}
+                style={({ pressed }) => [styles.closeBtn, pressed && styles.closeBtnPressed]}
               >
                 <Ionicons name="close" size={14} color="#cc785c" />
               </Pressable>
@@ -115,16 +98,8 @@ export default function ReflectionModal({ dayId, userId, isLatest }) {
             >
               {user && (
                 <>
-                  <Section
-                    icon="trophy-outline"
-                    label="Achievements"
-                    body={user.achievements}
-                  />
-                  <Section
-                    icon="thunderstorm-outline"
-                    label="Challenges"
-                    body={user.challenges}
-                  />
+                  <Section icon="trophy-outline" label="Achievements" body={user.achievements} />
+                  <Section icon="thunderstorm-outline" label="Challenges" body={user.challenges} />
                   <Section
                     icon="arrow-forward-circle-outline"
                     label="Tomorrow's Focus"
