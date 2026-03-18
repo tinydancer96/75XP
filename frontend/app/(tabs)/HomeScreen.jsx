@@ -387,6 +387,7 @@ export default function HomeScreen() {
         <View style={{ height: 24 }} />
       </ScrollView>
 
+      {/* + modal rendered at screen level, outside ScrollView */}
       <SubmitSuccessModal visible={showAnimation} onClose={() => setShowAnimation(false)} />
     </SafeAreaView>
   );
