@@ -1,4 +1,4 @@
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons } from "@react-native-vector-icons/ionicons";
 import { View, Modal, StyleSheet, Pressable, Text, ScrollView, Animated } from "react-native";
 import { useState, useEffect, useRef } from "react";
 import { mockReflections } from "../mockData/reflectionsData";
