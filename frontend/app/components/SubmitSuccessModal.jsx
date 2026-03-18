@@ -1,18 +1,16 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { Modal, View, TouchableOpacity, Text, StyleSheet } from "react-native";
-import { VideoView, useVideoPlayer } from "expo-video";
+import { Video, ResizeMode } from "expo-av";
 
 const ACCENT = "#4F6EF7";
 const SOURCE = require("../assets/add-a-character-in-a-hot-air-balloon-floating-upwa.mp4");
 
 export default function SubmitSuccessModal({ visible, onClose }) {
-  const player = useVideoPlayer(SOURCE);
-  player.loop = true;
-  player.muted = true;
+  const videoRef = useRef(null);
 
   useEffect(() => {
-    if (visible) {
-      player.replay();
+    if (visible && videoRef.current) {
+      videoRef.current.replayAsync().catch(() => null);
     }
   }, [visible]);
 
@@ -20,15 +18,18 @@ export default function SubmitSuccessModal({ visible, onClose }) {
     <Modal visible={visible} transparent animationType="fade">
       <View style={styles.overlay}>
         <View style={styles.modal}>
-          <VideoView
-            player={player}
+          <Video
+            ref={videoRef}
+            source={SOURCE}
             style={styles.video}
-            contentFit="contain"
-            nativeControls={false}
+            resizeMode={ResizeMode.CONTAIN}
+            shouldPlay={true}
+            isLooping={false}
+            isMuted={true}
+            onPlaybackStatusUpdate={(status) => {
+              if (status.didJustFinish) onClose();
+            }}
           />
-          <TouchableOpacity style={styles.closeBtn} onPress={onClose}>
-            <Text style={styles.closeBtnText}>Continue</Text>
-          </TouchableOpacity>
         </View>
       </View>
     </Modal>
@@ -45,13 +46,20 @@ const styles = StyleSheet.create({
   modal: {
     width: "100%",
     height: "100%",
-    backgroundColor: "#fff",
-    justifyContent: "center",
+    position: "relative",
+    backgroundColor: "#000",
+    justifyContent: "flex-end",
     alignItems: "center",
-    paddingHorizontal: 24,
     gap: 16,
+    paddingBottom: 40,
   },
-  video: { width: "100%", aspectRatio: 1 },
+  video: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    bottom: 0,
+    right: 0,
+  },
   closeBtn: {
     backgroundColor: ACCENT,
     paddingHorizontal: 32,

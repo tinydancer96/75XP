@@ -102,11 +102,7 @@ export default function MapNodes({ imgWidth, imgHeight }) {
     <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
       {gridItems.map(({ dayId, row, col }) => (
         <View key={dayId} style={toCell(row, col)}>
-          <ReflectionModal
-            dayId={dayId}
-            userId={1}
-            isLatest={dayId === latestDayId}
-          />
+          <ReflectionModal dayId={dayId} userId={1} isLatest={dayId === latestDayId} />
         </View>
       ))}
     </View>
