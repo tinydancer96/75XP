@@ -1,15 +1,24 @@
 import { View, StyleSheet } from "react-native";
 import ReflectionModal from "./ReflectionModal";
-import { mockReflections } from "../mockData/reflectionsData";
-
+import { useUserContext } from "../context/UserContext";
+import axios from "axios";
+import { useEffect, useState } from "react";
 export default function MapNodes({ imgWidth, imgHeight }) {
+  const { accessToken } = useUserContext();
+  const [data, setData] = useState([]);
+  const [err, setErr] = useState(null);
+
   const columns = 10;
   const rows = 80;
 
   const cellWidth = imgWidth / columns;
   const cellHeight = imgHeight / rows;
 
-  const latestDayId = Math.max(...mockReflections.map((r) => r.day_id));
+  let latestDayId = 0;
+  if (data.length > 0) {
+    latestDayId = Math.max(...data.map((day) => day.day_number));
+  }
+
   const toCell = (row, col) => ({
     position: "absolute",
     left: (col - 1) * cellWidth,
@@ -98,15 +107,30 @@ export default function MapNodes({ imgWidth, imgHeight }) {
     { dayId: 75, row: 5, col: 6 },
   ];
 
+  useEffect(() => {
+    if (!accessToken) return;
+    const asyncFetchDay = async () => {
+      try {
+        const response = await axios.get(`https://xp75-be.onrender.com/api/days/`, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+        const result = response.data;
+        setData(Array.isArray(result) ? result : [result]);
+      } catch (error) {
+        setErr(error);
+        console.log(error);
+      }
+    };
+    asyncFetchDay();
+  }, [accessToken]);
+
   return (
     <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
       {gridItems.map(({ dayId, row, col }) => (
         <View key={dayId} style={toCell(row, col)}>
-          <ReflectionModal
-            dayId={dayId}
-            userId={1}
-            isLatest={dayId === latestDayId}
-          />
+          <ReflectionModal dayId={dayId} isLatest={dayId === latestDayId} data={data} />
         </View>
       ))}
     </View>
