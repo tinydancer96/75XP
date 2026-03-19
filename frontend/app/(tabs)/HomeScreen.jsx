@@ -368,7 +368,8 @@ export default function HomeScreen() {
           <TouchableOpacity
             style={[styles.submitBtn, !allDone && styles.submitBtnDisabled]}
             onPress={allDone ? handleSubmit : undefined}
-            activeOpacity={allDone ? 0.85 : 1}>
+            activeOpacity={allDone ? 0.85 : 1}
+          >
             <Text style={styles.submitBtnText}>
               {allDone ? "Complete Day ✓" : `${completedCount}/${TASKS.length} tasks complete`}
             </Text>
@@ -384,7 +385,11 @@ export default function HomeScreen() {
         <View style={{ height: 24 }} />
       </ScrollView>
 
-      <SubmitSuccessModal visible={showAnimation} onClose={() => setShowAnimation(false)} />
+      <SubmitSuccessModal
+        visible={showAnimation}
+        onClose={() => setShowAnimation(false)}
+        dayNumber={dayNumber}
+      />
     </SafeAreaView>
   );
 }

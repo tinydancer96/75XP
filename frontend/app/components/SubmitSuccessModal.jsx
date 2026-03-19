@@ -1,13 +1,28 @@
 import React, { useEffect } from "react";
-import { Modal, View, TouchableOpacity, Text, StyleSheet } from "react-native";
+import { Modal, View, StyleSheet } from "react-native";
 import { VideoView, useVideoPlayer } from "expo-video";
 import { useEventListener } from "expo";
 
 const ACCENT = "#4F6EF7";
-const SOURCE = require("../assets/add-a-character-in-a-hot-air-balloon-floating-upwa.mp4");
+const DAYCOMPLETED = require("../assets/add-a-character-in-a-hot-air-balloon-floating-upwa.mp4");
+const BRONZE = require("../assets/bronze-achievement-medal-flying-into-frame-like-a-.mp4");
+const SILVER = require("../assets/silver-achievement-medal-shooting-into-frame-like-.mp4");
+const GOLD = require("../assets/gold-achievement-medal-shooting-into-frame-like-a-.mp4");
 
-export default function SubmitSuccessModal({ visible, onClose }) {
-  const player = useVideoPlayer(SOURCE);
+export default function SubmitSuccessModal({ visible, onClose, dayNumber }) {
+  const videoSource = (() => {
+    switch (dayNumber) {
+      case 25:
+        return BRONZE;
+      case 50:
+        return SILVER;
+      case 75:
+        return GOLD;
+      default:
+        return DAYCOMPLETED;
+    }
+  })();
+  const player = useVideoPlayer(videoSource);
   player.loop = true;
   player.muted = true;
 
@@ -15,7 +30,7 @@ export default function SubmitSuccessModal({ visible, onClose }) {
     if (visible) {
       player.replay();
     }
-  }, [visible]);
+  }, [visible, player]);
 
   useEventListener(player, "playToEnd", () => {
     onClose();

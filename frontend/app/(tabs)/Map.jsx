@@ -1,11 +1,4 @@
-import {
-  View,
-  StyleSheet,
-  Dimensions,
-  ImageBackground,
-  ScrollView,
-  Pressable,
-} from "react-native";
+import { View, StyleSheet, Dimensions, ImageBackground, ScrollView, Pressable } from "react-native";
 
 import MapNodes from "../components/MapNodes";
 
