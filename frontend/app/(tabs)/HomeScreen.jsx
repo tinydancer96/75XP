@@ -41,18 +41,83 @@ const DUMMY_REFLECTION = {
 };
 
 const TASKS = [
-  { key: "diet", label: "Diet", emoji: "🥗", subtitle: "Stick to your plan, no cheat meals" },
+  {
+    key: "diet",
+    label: "Diet",
+    emoji: (
+      <Image
+        source={require("../assets/food.jpg")}
+        style={{ width: 40, height: 40 }}
+      />
+    ),
+    subtitle: "Stick to your plan, no cheat meals",
+  },
   {
     key: "outdoorWorkout",
     label: "Outdoor Workout",
-    emoji: "🏃",
+    emoji: (
+      <Image
+        source={require("../assets/sun.jpg")}
+        style={{ width: 40, height: 40 }}
+      />
+    ),
     subtitle: "45 min minimum outside",
   },
-  { key: "indoorWorkout", label: "Indoor Workout", emoji: "🏋️", subtitle: "45 min minimum inside" },
-  { key: "water", label: "Water", emoji: "💧", subtitle: "Drink 1 gallon (≈4 litres)" },
-  { key: "reading", label: "Reading", emoji: "📖", subtitle: "10 pages of a non-fiction book" },
-  { key: "reflection", label: "Reflection", emoji: "🪞", subtitle: "Complete today's reflection" },
-  { key: "progressPhoto", label: "Progress Photo", emoji: "📸", subtitle: "Take your daily photo" },
+  {
+    key: "indoorWorkout",
+    label: "Indoor Workout",
+    emoji: (
+      <Image
+        source={require("../assets/dumbell.jpg")}
+        style={{ width: 40, height: 40 }}
+      />
+    ),
+    subtitle: "45 min minimum inside",
+  },
+  {
+    key: "water",
+    label: "Water",
+    emoji: (
+      <Image
+        source={require("../assets/water.jpg")}
+        style={{ width: 40, height: 40 }}
+      />
+    ),
+    subtitle: "Drink 1 gallon (≈4 litres)",
+  },
+  {
+    key: "reading",
+    label: "Reading",
+    emoji: (
+      <Image
+        source={require("../assets/book.jpg")}
+        style={{ width: 40, height: 40 }}
+      />
+    ),
+    subtitle: "10 pages of a non-fiction book",
+  },
+  {
+    key: "reflection",
+    label: "Reflection",
+    emoji: (
+      <Image
+        source={require("../assets/thought bubble.jpg")}
+        style={{ width: 40, height: 40 }}
+      />
+    ),
+    subtitle: "Complete today's reflection",
+  },
+  {
+    key: "progressPhoto",
+    label: "Progress Photo",
+    emoji: (
+      <Image
+        source={require("../assets/camera.jpg")}
+        style={{ width: 40, height: 40 }}
+      />
+    ),
+    subtitle: "Take your daily photo",
+  },
 ];
 
 const freshChecked = () => Object.fromEntries(TASKS.map((t) => [t.key, false]));
@@ -63,7 +128,15 @@ const storageKey = (userId) => `xp75_day_${userId}_${todayString()}`;
 
 const msUntilMidnight = () => {
   const now = new Date();
-  const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0, 0);
+  const midnight = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate() + 1,
+    0,
+    0,
+    0,
+    0,
+  );
   return midnight.getTime() - now.getTime();
 };
 
@@ -98,11 +171,20 @@ export default function HomeScreen() {
       .catch(() => setApiStatus("API unreachable ✗"));
   }, []);
 
-  const saveUserDayState = async (userId, newChecked, newPhoto, newSubmitted) => {
+  const saveUserDayState = async (
+    userId,
+    newChecked,
+    newPhoto,
+    newSubmitted,
+  ) => {
     try {
       await AsyncStorage.setItem(
         storageKey(userId),
-        JSON.stringify({ checked: newChecked, photo: newPhoto, submitted: newSubmitted }),
+        JSON.stringify({
+          checked: newChecked,
+          photo: newPhoto,
+          submitted: newSubmitted,
+        }),
       );
     } catch (err) {
       console.warn("AsyncStorage write failed:", err);
@@ -136,9 +218,13 @@ export default function HomeScreen() {
         }
 
         const lastDay = days[days.length - 1];
-        const lastDayDate = lastDay.created_at ? lastDay.created_at.split("T")[0] : null;
+        const lastDayDate = lastDay.created_at
+          ? lastDay.created_at.split("T")[0]
+          : null;
         const today = todayString();
-        const yesterday = new Date(Date.now() - 86400000).toISOString().split("T")[0];
+        const yesterday = new Date(Date.now() - 86400000)
+          .toISOString()
+          .split("T")[0];
         const lastDayNumber = lastDay.day_number;
 
         if (lastDayDate === today) {
@@ -189,7 +275,8 @@ export default function HomeScreen() {
   const scheduleMidnightReset = useCallback(
     (userId, token) => {
       if (midnightTimerRef.current) clearTimeout(midnightTimerRef.current);
-      if (midnightIntervalRef.current) clearInterval(midnightIntervalRef.current);
+      if (midnightIntervalRef.current)
+        clearInterval(midnightIntervalRef.current);
 
       midnightTimerRef.current = setTimeout(() => {
         loadUserDayState(userId, token);
@@ -207,7 +294,8 @@ export default function HomeScreen() {
   useEffect(() => {
     return () => {
       if (midnightTimerRef.current) clearTimeout(midnightTimerRef.current);
-      if (midnightIntervalRef.current) clearInterval(midnightIntervalRef.current);
+      if (midnightIntervalRef.current)
+        clearInterval(midnightIntervalRef.current);
     };
   }, []);
 
@@ -252,7 +340,10 @@ export default function HomeScreen() {
     if (submitted || !user) return;
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!permission.granted) {
-      Alert.alert("Permission required", "Permission to access the photo library is required.");
+      Alert.alert(
+        "Permission required",
+        "Permission to access the photo library is required.",
+      );
       return;
     }
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -301,7 +392,10 @@ export default function HomeScreen() {
       await saveUserDayState(user.id, checked, photo, true);
     } catch (err) {
       console.warn("Submit error:", err);
-      Alert.alert("Submit failed", "Could not reach the server. Please try again.");
+      Alert.alert(
+        "Submit failed",
+        "Could not reach the server. Please try again.",
+      );
     }
   };
 
@@ -321,10 +415,16 @@ export default function HomeScreen() {
       />
 
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => setLoginVisible(true)} style={styles.loginBtn}>
+        <TouchableOpacity
+          onPress={() => setLoginVisible(true)}
+          style={styles.loginBtn}
+        >
           {user ? (
             <>
-              <Image source={{ uri: user.avatar_url }} style={styles.avatarThumb} />
+              <Image
+                source={{ uri: user.avatar_url }}
+                style={styles.avatarThumb}
+              />
               <Text style={styles.loginBtnText}>{user.name}</Text>
             </>
           ) : (
@@ -333,7 +433,12 @@ export default function HomeScreen() {
         </TouchableOpacity>
       </View>
 
-      <Text style={[styles.apiStatus, { color: apiStatus.includes("✓") ? SUCCESS : DANGER }]}>
+      <Text
+        style={[
+          styles.apiStatus,
+          { color: apiStatus.includes("✓") ? SUCCESS : DANGER },
+        ]}
+      >
         {apiStatus}
       </Text>
 
@@ -344,10 +449,15 @@ export default function HomeScreen() {
         totalDays={TOTAL_DAYS}
       />
 
-      <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        contentContainerStyle={styles.scroll}
+        showsVerticalScrollIndicator={false}
+      >
         {!isLoggedIn && (
           <View style={styles.loginBanner}>
-            <Text style={styles.loginBannerText}>Login to start tracking your progress</Text>
+            <Text style={styles.loginBannerText}>
+              Login to start tracking your progress
+            </Text>
           </View>
         )}
 
@@ -371,7 +481,9 @@ export default function HomeScreen() {
             activeOpacity={allDone ? 0.85 : 1}
           >
             <Text style={styles.submitBtnText}>
-              {allDone ? "Complete Day ✓" : `${completedCount}/${TASKS.length} tasks complete`}
+              {allDone
+                ? "Complete Day ✓"
+                : `${completedCount}/${TASKS.length} tasks complete`}
             </Text>
           </TouchableOpacity>
         )}
