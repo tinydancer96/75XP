@@ -16,6 +16,7 @@ import DayProgress from "../components/DayProgress";
 import LoginModal from "../components/LoginModal";
 import SubmitSuccessModal from "../components/SubmitSuccessModal";
 import TaskCard from "../components/TaskCard";
+import { useUserContext } from "../context/UserContext";
 import {
   ACCENT,
   BG,
@@ -77,12 +78,12 @@ const checkedFromDay = (day) => ({
 });
 
 export default function HomeScreen() {
+  const { user, accessToken, login, logout } = useUserContext();
+
   const [checked, setChecked] = useState(freshChecked());
   const [photo, setPhoto] = useState(null);
   const [submitted, setSubmitted] = useState(false);
   const [loginVisible, setLoginVisible] = useState(false);
-  const [user, setUser] = useState(null);
-  const [accessToken, setAccessToken] = useState(null);
   const [dayNumber, setDayNumber] = useState(1);
   const [apiStatus, setApiStatus] = useState("checking...");
   const [showAnimation, setShowAnimation] = useState(false);
@@ -192,7 +193,6 @@ export default function HomeScreen() {
 
       midnightTimerRef.current = setTimeout(() => {
         loadUserDayState(userId, token);
-
         midnightIntervalRef.current = setInterval(
           () => {
             loadUserDayState(userId, token);
@@ -222,19 +222,17 @@ export default function HomeScreen() {
 
   const handleLoginSuccess = useCallback(
     async (userData, token) => {
-      setUser(userData);
-      setAccessToken(token);
+      login(userData, token);
       await loadUserDayState(userData.id, token);
       scheduleMidnightReset(userData.id, token);
     },
-    [loadUserDayState, scheduleMidnightReset],
+    [login, loadUserDayState, scheduleMidnightReset],
   );
 
   const handleLogout = () => {
     if (midnightTimerRef.current) clearTimeout(midnightTimerRef.current);
     if (midnightIntervalRef.current) clearInterval(midnightIntervalRef.current);
-    setUser(null);
-    setAccessToken(null);
+    logout();
     setChecked(freshChecked());
     setPhoto(null);
     setSubmitted(false);
@@ -370,8 +368,7 @@ export default function HomeScreen() {
           <TouchableOpacity
             style={[styles.submitBtn, !allDone && styles.submitBtnDisabled]}
             onPress={allDone ? handleSubmit : undefined}
-            activeOpacity={allDone ? 0.85 : 1}
-          >
+            activeOpacity={allDone ? 0.85 : 1}>
             <Text style={styles.submitBtnText}>
               {allDone ? "Complete Day ✓" : `${completedCount}/${TASKS.length} tasks complete`}
             </Text>
@@ -387,7 +384,6 @@ export default function HomeScreen() {
         <View style={{ height: 24 }} />
       </ScrollView>
 
-      {/* + modal rendered at screen level, outside ScrollView */}
       <SubmitSuccessModal visible={showAnimation} onClose={() => setShowAnimation(false)} />
     </SafeAreaView>
   );
