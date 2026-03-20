@@ -13,16 +13,21 @@ import {
   View,
 } from "react-native";
 import DayProgress from "../components/DayProgress";
+import LoadingScreen from "../components/LoadingScreen";
 import LoginModal from "../components/LoginModal";
+import ReflectionAccordion from "../components/ReflectionAccordian";
 import SubmitSuccessModal from "../components/SubmitSuccessModal";
 import TaskCard from "../components/TaskCard";
 import { useUserContext } from "../context/UserContext";
 import {
   ACCENT,
+  ACCENT_SOFT,
   BG,
+  CARD,
   DANGER,
   MUTED,
   SUCCESS,
+  SUCCESS_SOFT,
   baseCard,
   fontSizes,
   fontWeights,
@@ -30,15 +35,6 @@ import {
 
 const BASE_URL = "https://xp75-be.onrender.com";
 const TOTAL_DAYS = 75;
-
-const DUMMY_REFLECTION = {
-  mood_rating: 3,
-  achievements: "Completed all tasks for the day successfully.",
-  challenges: "Staying consistent and focused throughout the day.",
-  next_day_focus: "Keep the same energy and complete all tasks again.",
-  progress_pic:
-    "https://static.vecteezy.com/system/resources/previews/001/218/694/non_2x/under-construction-warning-sign-vector.jpg",
-};
 
 const TASKS = [
   { key: "diet", label: "Diet", emoji: "🥗", subtitle: "Stick to your plan, no cheat meals" },
@@ -56,11 +52,8 @@ const TASKS = [
 ];
 
 const freshChecked = () => Object.fromEntries(TASKS.map((t) => [t.key, false]));
-
 const todayString = () => new Date().toISOString().split("T")[0];
-
 const storageKey = (userId) => `xp75_day_${userId}_${todayString()}`;
-
 const msUntilMidnight = () => {
   const now = new Date();
   const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0, 0);
@@ -74,7 +67,7 @@ const checkedFromDay = (day) => ({
   water: day.water_consumed,
   reading: day.pages_read,
   reflection: true,
-  progressPhoto: !!day.progress_pic,
+  progressPhoto: !!day.progress_pic_key,
 });
 
 export default function HomeScreen() {
@@ -84,18 +77,26 @@ export default function HomeScreen() {
   const [photo, setPhoto] = useState(null);
   const [submitted, setSubmitted] = useState(false);
   const [loginVisible, setLoginVisible] = useState(false);
+  const [reflectionVisible, setReflectionVisible] = useState(false);
+  const [reflectionData, setReflectionData] = useState(null);
   const [dayNumber, setDayNumber] = useState(1);
   const [apiStatus, setApiStatus] = useState("checking...");
   const [showAnimation, setShowAnimation] = useState(false);
+  const [loadingDone, setLoadingDone] = useState(false);
 
   const midnightTimerRef = useRef(null);
   const midnightIntervalRef = useRef(null);
 
   useEffect(() => {
-    fetch(`${BASE_URL}/api/version`)
+    const minDelay = new Promise((resolve) => setTimeout(resolve, 4700));
+    const apiCheck = fetch(`${BASE_URL}/api/version`)
       .then((res) => res.json())
-      .then(() => setApiStatus("API connected ✓"))
-      .catch(() => setApiStatus("API unreachable ✗"));
+      .then(() => "connected")
+      .catch(() => "unreachable");
+
+    Promise.all([minDelay, apiCheck]).then(([, status]) => {
+      setApiStatus(status === "connected" ? "API connected ✓" : "API unreachable ✗");
+    });
   }, []);
 
   const saveUserDayState = async (userId, newChecked, newPhoto, newSubmitted) => {
@@ -132,6 +133,7 @@ export default function HomeScreen() {
           setChecked(freshChecked());
           setPhoto(null);
           setSubmitted(false);
+          setReflectionData(null);
           return;
         }
 
@@ -154,6 +156,7 @@ export default function HomeScreen() {
           setChecked(freshChecked());
           setPhoto(null);
           setSubmitted(false);
+          setReflectionData(null);
           return;
         }
 
@@ -161,6 +164,7 @@ export default function HomeScreen() {
         setChecked(freshChecked());
         setPhoto(null);
         setSubmitted(false);
+        setReflectionData(null);
         return;
       }
 
@@ -237,10 +241,25 @@ export default function HomeScreen() {
     setPhoto(null);
     setSubmitted(false);
     setDayNumber(1);
+    setReflectionData(null);
+  };
+
+  const handleReflectionSave = (data) => {
+    setReflectionData(data);
+    setChecked((prev) => {
+      const next = { ...prev, reflection: true };
+      if (user) saveUserDayState(user.id, next, photo, false);
+      return next;
+    });
   };
 
   const toggle = (key) => {
     if (submitted || !user) return;
+    if (key === "reflection") {
+      setReflectionVisible(true);
+      return;
+    }
+    if (key === "progressPhoto") return;
     setChecked((prev) => {
       const next = { ...prev, [key]: !prev[key] };
       saveUserDayState(user.id, next, photo, false);
@@ -263,29 +282,44 @@ export default function HomeScreen() {
     if (!result.canceled) {
       const newPhoto = result.assets[0].uri;
       setPhoto(newPhoto);
-      saveUserDayState(user.id, checked, newPhoto, false);
+      setChecked((prev) => {
+        const next = { ...prev, progressPhoto: true };
+        saveUserDayState(user.id, next, newPhoto, false);
+        return next;
+      });
     }
   };
 
   const handleSubmit = async () => {
-    const payload = {
-      day_number: dayNumber,
-      diet_adhered: checked.diet,
-      outdoor_workout_completed: checked.outdoorWorkout,
-      indoor_workout_completed: checked.indoorWorkout,
-      water_consumed: checked.water,
-      pages_read: checked.reading,
-      ...DUMMY_REFLECTION,
-    };
+    if (!reflectionData) {
+      Alert.alert("Reflection required", "Please complete your reflection before submitting.");
+      return;
+    }
+    const formData = new FormData();
+
+    formData.append("day_number", String(dayNumber));
+    formData.append("diet_adhered", String(checked.diet));
+    formData.append("outdoor_workout_completed", String(checked.outdoorWorkout));
+    formData.append("indoor_workout_completed", String(checked.indoorWorkout));
+    formData.append("water_consumed", String(checked.water));
+    formData.append("pages_read", String(checked.reading));
+    formData.append("mood_rating", String(reflectionData.mood_rating));
+    formData.append("achievements", reflectionData.achievements);
+    formData.append("challenges", reflectionData.challenges);
+    formData.append("next_day_focus", reflectionData.next_day_focus);
+    if (photo) {
+      formData.append("progress_pic", {
+        uri: photo,
+        name: "progress-pic.jpg",
+        type: "image/jpeg",
+      });
+    }
 
     try {
       const res = await fetch(`${BASE_URL}/api/days`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
-        },
-        body: JSON.stringify(payload),
+        headers: { Authorization: `Bearer ${accessToken}` },
+        body: formData,
       });
 
       const data = await res.json();
@@ -308,9 +342,12 @@ export default function HomeScreen() {
   const completedCount = Object.values(checked).filter(Boolean).length;
   const allDone = completedCount === TASKS.length;
   const isLoggedIn = !!user;
+  const isLoading = apiStatus === "checking...";
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: BG }}>
+      {!loadingDone && <LoadingScreen onReady={isLoading ? null : () => setLoadingDone(true)} />}
+
       <LoginModal
         visible={loginVisible}
         onClose={() => setLoginVisible(false)}
@@ -318,6 +355,19 @@ export default function HomeScreen() {
         user={user}
         accessToken={accessToken}
         onLogout={handleLogout}
+      />
+
+      <ReflectionAccordion
+        visible={reflectionVisible}
+        onClose={() => setReflectionVisible(false)}
+        onSave={handleReflectionSave}
+        existingData={reflectionData}
+      />
+
+      <SubmitSuccessModal
+        visible={showAnimation}
+        onClose={() => setShowAnimation(false)}
+        dayNumber={dayNumber}
       />
 
       <View style={styles.header}>
@@ -361,6 +411,7 @@ export default function HomeScreen() {
             photo={photo}
             toggle={toggle}
             pickImage={pickImage}
+            onOpenReflection={() => setReflectionVisible(true)}
           />
         ))}
 
@@ -383,8 +434,6 @@ export default function HomeScreen() {
 
         <View style={{ height: 24 }} />
       </ScrollView>
-
-      <SubmitSuccessModal visible={showAnimation} onClose={() => setShowAnimation(false)} />
     </SafeAreaView>
   );
 }
@@ -395,7 +444,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     paddingHorizontal: 20,
-    paddingTop: 16,
+    paddingTop: 52,
     paddingBottom: 12,
   },
   loginBtn: {
@@ -412,10 +461,10 @@ const styles = StyleSheet.create({
     height: 28,
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: "#FFF",
+    borderColor: CARD,
   },
   loginBtnText: {
-    color: "#FFF",
+    color: CARD,
     fontSize: fontSizes.base,
     fontWeight: fontWeights.semibold,
     letterSpacing: 0.4,
@@ -432,7 +481,7 @@ const styles = StyleSheet.create({
   },
   loginBanner: {
     ...baseCard.card,
-    backgroundColor: "#EEF1FE",
+    backgroundColor: ACCENT_SOFT,
     alignItems: "center",
     paddingVertical: 14,
   },
@@ -452,13 +501,13 @@ const styles = StyleSheet.create({
     backgroundColor: MUTED,
   },
   submitBtnText: {
-    color: "#FFF",
+    color: CARD,
     fontWeight: fontWeights.bold,
     fontSize: fontSizes.md,
     letterSpacing: 0.3,
   },
   submittedBanner: {
-    backgroundColor: "#DCFCE7",
+    backgroundColor: SUCCESS_SOFT,
     borderRadius: 12,
     paddingVertical: 14,
     alignItems: "center",
