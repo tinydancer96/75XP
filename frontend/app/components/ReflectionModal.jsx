@@ -1,13 +1,32 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { View, Modal, StyleSheet, Pressable, Text, ScrollView, Animated } from "react-native";
+import {
+  View,
+  Modal,
+  StyleSheet,
+  Pressable,
+  Text,
+  ScrollView,
+  Animated,
+  useWindowDimensions,
+} from "react-native";
 import { useState, useEffect, useRef } from "react";
+
+const summaryDay = [7, 14, 21, 28, 35, 42, 49, 56, 63, 70];
 
 export default function ReflectionModal({ dayId, isLatest, data }) {
   const [visible, setVisible] = useState(false);
+  const [activePage, setActivePage] = useState(0);
   const pulseAnim = useRef(new Animated.Value(1)).current;
+  const scrollRef = useRef(null);
+  const { width } = useWindowDimensions();
+
+  // Modal inner width: full width minus overlay padding (20 * 2), capped at 380
+  const sheetWidth = Math.min(width - 40, 380);
 
   const today = data.find((day) => day.day_number === dayId);
   const hasReflection = !!today;
+  const isSummaryDay = summaryDay.includes(dayId);
+  const nodeColor = isSummaryDay ? "#e16041" : "#fbe268";
 
   useEffect(() => {
     if (!isLatest) return;
@@ -31,6 +50,27 @@ export default function ReflectionModal({ dayId, isLatest, data }) {
     return () => pulse.stop();
   }, [isLatest, pulseAnim]);
 
+  const handleScroll = (e) => {
+    const page = Math.round(e.nativeEvent.contentOffset.x / sheetWidth);
+    setActivePage(page);
+  };
+
+  const goToPage = (page) => {
+    scrollRef.current?.scrollTo({ x: page * sheetWidth, animated: true });
+    setActivePage(page);
+  };
+
+  const handleClose = () => {
+    setVisible(false);
+    // Reset to first page when closing
+    setTimeout(() => {
+      scrollRef.current?.scrollTo({ x: 0, animated: false });
+      setActivePage(0);
+    }, 300);
+  };
+
+  const accentColor = isSummaryDay ? "#e16041" : "#cc785c";
+
   return (
     <View>
       <Pressable
@@ -48,6 +88,7 @@ export default function ReflectionModal({ dayId, isLatest, data }) {
                 style={[
                   styles.pulseRing,
                   {
+                    backgroundColor: nodeColor,
                     transform: [{ scale: pulseAnim }],
                     opacity: pulseAnim.interpolate({
                       inputRange: [1, 1.25],
@@ -57,7 +98,7 @@ export default function ReflectionModal({ dayId, isLatest, data }) {
                 ]}
               />
             )}
-            <Ionicons name="radio-button-on" size={30} color="#fbe268" />
+            <Ionicons name="radio-button-on" size={30} color={nodeColor} />
           </View>
         ) : (
           <Ionicons name="radio-button-on" size={30} color="#9e9898" />
@@ -68,44 +109,116 @@ export default function ReflectionModal({ dayId, isLatest, data }) {
         visible={visible}
         animationType="fade"
         transparent={true}
-        onRequestClose={() => setVisible(false)}
+        onRequestClose={handleClose}
       >
         <View style={styles.overlay}>
-          <View style={styles.sheet}>
-            <View style={styles.accentBar} />
+          <View style={[styles.sheet, { width: sheetWidth }]}>
+            <View
+              style={[styles.accentBar, { backgroundColor: accentColor }]}
+            />
 
             <View style={styles.header}>
               <View>
-                <Text style={styles.dayLabel}>Day {dayId}</Text>
-                <Text style={styles.headerTitle}>Journal Entry</Text>
+                <Text style={[styles.dayLabel, { color: accentColor }]}>
+                  {isSummaryDay ? "Week Summary · " : ""}Day {dayId}
+                </Text>
+                <Text style={styles.headerTitle}>
+                  {activePage === 0 ? "Journal Entry" : "Week in Review"}
+                </Text>
               </View>
               <Pressable
-                onPress={() => setVisible(false)}
-                style={({ pressed }) => [styles.closeBtn, pressed && styles.closeBtnPressed]}
+                onPress={handleClose}
+                style={({ pressed }) => [
+                  styles.closeBtn,
+                  pressed && styles.closeBtnPressed,
+                ]}
               >
-                <Ionicons name="close" size={14} color="#cc785c" />
+                <Ionicons name="close" size={14} color={accentColor} />
               </Pressable>
             </View>
 
             <View style={styles.divider} />
 
             <ScrollView
-              style={styles.scrollArea}
-              contentContainerStyle={styles.scrollContent}
-              showsVerticalScrollIndicator={false}
+              ref={scrollRef}
+              horizontal
+              pagingEnabled
+              showsHorizontalScrollIndicator={false}
+              onMomentumScrollEnd={handleScroll}
+              scrollEnabled={isSummaryDay}
+              style={{ width: sheetWidth }}
             >
-              {today && (
-                <>
-                  <Section icon="trophy-outline" label="Achievements" body={today.achievements} />
-                  <Section icon="thunderstorm-outline" label="Challenges" body={today.challenges} />
-                  <Section
-                    icon="arrow-forward-circle-outline"
-                    label="Tomorrow's Focus"
-                    body={today.next_day_focus}
-                  />
-                </>
+              <View style={{ width: sheetWidth }}>
+                <ScrollView
+                  style={styles.scrollArea}
+                  contentContainerStyle={styles.scrollContent}
+                  showsVerticalScrollIndicator={false}
+                >
+                  {today && (
+                    <>
+                      <Section
+                        icon="trophy-outline"
+                        label="Achievements"
+                        body={today.achievements}
+                        accentColor={accentColor}
+                      />
+                      <Section
+                        icon="thunderstorm-outline"
+                        label="Challenges"
+                        body={today.challenges}
+                        accentColor={accentColor}
+                      />
+                      <Section
+                        icon="arrow-forward-circle-outline"
+                        label="Tomorrow's Focus"
+                        body={today.next_day_focus}
+                        accentColor={accentColor}
+                      />
+                    </>
+                  )}
+                </ScrollView>
+              </View>
+
+              {isSummaryDay && (
+                <View style={{ width: sheetWidth }}>
+                  <ScrollView
+                    style={styles.scrollArea}
+                    contentContainerStyle={styles.scrollContent}
+                    showsVerticalScrollIndicator={false}
+                  >
+                    {today && (
+                      <>
+                        {/* AI Summary call */}
+                        <Section
+                          icon="bar-chart-outline"
+                          label="This Week's Summary"
+                          body={today.week_overview}
+                          accentColor={accentColor}
+                        />
+                      </>
+                    )}
+                  </ScrollView>
+                </View>
               )}
             </ScrollView>
+
+            {/* Pagination dots — only shown on summary days */}
+            {isSummaryDay && (
+              <View style={styles.pagination}>
+                {[0, 1].map((i) => (
+                  <Pressable key={i} onPress={() => goToPage(i)}>
+                    <View
+                      style={[
+                        styles.dot,
+                        activePage === i
+                          ? [styles.dotActive, { backgroundColor: accentColor }]
+                          : styles.dotInactive,
+                      ]}
+                    />
+                  </Pressable>
+                ))}
+              </View>
+            )}
           </View>
         </View>
       </Modal>
@@ -113,14 +226,18 @@ export default function ReflectionModal({ dayId, isLatest, data }) {
   );
 }
 
-function Section({ icon, label, body }) {
+function Section({ icon, label, body, accentColor }) {
   return (
     <View style={styles.section}>
       <View style={styles.sectionHeader}>
-        <View style={styles.iconPill}>
-          <Ionicons name={icon} size={14} color="#cc785c" />
+        <View
+          style={[styles.iconPill, { backgroundColor: `${accentColor}18` }]}
+        >
+          <Ionicons name={icon} size={14} color={accentColor} />
         </View>
-        <Text style={styles.sectionLabel}>{label}</Text>
+        <Text style={[styles.sectionLabel, { color: accentColor }]}>
+          {label}
+        </Text>
       </View>
       <Text style={styles.sectionBody}>{body}</Text>
     </View>
@@ -145,7 +262,6 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: "#fbe268",
   },
   overlay: {
     flex: 1,
@@ -155,8 +271,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   sheet: {
-    width: "100%",
-    maxWidth: 380,
     backgroundColor: "#ffffff",
     borderRadius: 16,
     overflow: "hidden",
@@ -168,7 +282,6 @@ const styles = StyleSheet.create({
   },
   accentBar: {
     height: 4,
-    backgroundColor: "#cc785c",
   },
   header: {
     flexDirection: "row",
@@ -183,7 +296,6 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     letterSpacing: 3,
     textTransform: "uppercase",
-    color: "#cc785c",
     marginBottom: 2,
   },
   headerTitle: {
@@ -230,7 +342,6 @@ const styles = StyleSheet.create({
     width: 26,
     height: 26,
     borderRadius: 8,
-    backgroundColor: "#f5f0ed",
     justifyContent: "center",
     alignItems: "center",
   },
@@ -239,12 +350,30 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     letterSpacing: 2,
     textTransform: "uppercase",
-    color: "#cc785c",
   },
   sectionBody: {
     fontSize: 15,
     color: "#4a4a4a",
     lineHeight: 23,
     paddingLeft: 36,
+  },
+  pagination: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 6,
+    paddingVertical: 14,
+  },
+  dot: {
+    borderRadius: 4,
+  },
+  dotActive: {
+    width: 20,
+    height: 6,
+  },
+  dotInactive: {
+    width: 6,
+    height: 6,
+    backgroundColor: "#d1cdc9",
   },
 });
