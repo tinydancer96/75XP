@@ -1,51 +1,19 @@
-import { View, Text, StyleSheet } from "react-native";
+import React from "react";
+import { StyleSheet, Text, View } from "react-native";
 import { ACCENT, MUTED, TEXT, fontSizes, fontWeights } from "../styles/global";
-import { useUserContext } from "../context/UserContext";
-import axios from "axios";
-import React, { useEffect, useState } from "react";
+
 export default function DayProgress({
   completedCount,
   totalTasks,
   dayNumber,
   totalDays,
 }) {
-  const { accessToken } = useUserContext();
-  const [data, setData] = useState([]);
-  const [err, setErr] = useState(null);
   const percent = (completedCount / totalTasks) * 100;
-  let latestDayId = 1;
-  if (data.length > 0) {
-    latestDayId = Math.max(...data.map((day) => day.day_number));
-  }
-
-  useEffect(() => {
-    if (!accessToken) return;
-    const asyncFetchDay = async () => {
-      try {
-        const response = await axios.get(
-          `https://xp75-be.onrender.com/api/days/`,
-          {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
-          },
-        );
-        const result = response.data;
-        // setData(Array.isArray(result) ? result : [result]);
-
-        setData(result.days);
-      } catch (error) {
-        setErr(error);
-        console.log(error);
-      }
-    };
-    asyncFetchDay();
-  }, [accessToken]);
 
   return (
     <View style={styles.wrapper}>
       <View style={styles.dayInfo}>
-        <Text style={styles.dayNumber}>Day {latestDayId}</Text>
+        <Text style={styles.dayNumber}>Day {dayNumber}</Text>
         <Text style={styles.totalDays}>of {totalDays}</Text>
       </View>
 
