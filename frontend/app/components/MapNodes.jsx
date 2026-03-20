@@ -52,7 +52,7 @@ export default function MapNodes({ imgWidth, imgHeight }) {
       }
     };
     asyncFetchDay();
-  }, [accessToken]);
+  }, []);
 
   return (
     <View style={StyleSheet.absoluteFill} pointerEvents="box-none">

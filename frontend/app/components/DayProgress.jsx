@@ -13,7 +13,7 @@ export default function DayProgress({
   const [data, setData] = useState([]);
   const [err, setErr] = useState(null);
   const percent = (completedCount / totalTasks) * 100;
-  let latestDayId = 0;
+  let latestDayId = 1;
   if (data.length > 0) {
     latestDayId = Math.max(...data.map((day) => day.day_number));
   }
