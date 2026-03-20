@@ -1,6 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as ImagePicker from "expo-image-picker";
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import { useNavigation } from "@react-navigation/native";
 import {
   Alert,
   AppState,
@@ -145,7 +146,7 @@ const checkedFromDay = (day) => ({
 
 export default function HomeScreen() {
   const { user, accessToken, login, logout } = useUserContext();
-
+  const navigation = useNavigation();
   const [checked, setChecked] = useState(freshChecked());
   const [photo, setPhoto] = useState(null);
   const [submitted, setSubmitted] = useState(false);
@@ -392,7 +393,8 @@ export default function HomeScreen() {
       return;
     }
     const formData = new FormData();
-
+    setShowAnimation(true);
+    navigation.navigate("Map");
     formData.append("day_number", String(dayNumber));
     formData.append("diet_adhered", String(checked.diet));
     formData.append(
@@ -430,7 +432,8 @@ export default function HomeScreen() {
       }
 
       setSubmitted(true);
-      setShowAnimation(true);
+      // setShowAnimation(true);
+      // navigation.navigate("Map");
       await saveUserDayState(user.id, checked, photo, true);
     } catch (err) {
       console.warn("Submit error:", err);
