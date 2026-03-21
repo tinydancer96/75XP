@@ -3,6 +3,7 @@ import {
   Modal,
   View,
   Text,
+  Image,
   TextInput,
   TouchableOpacity,
   ScrollView,
@@ -26,18 +27,72 @@ import {
 } from "../styles/global";
 
 const MOODS = [
-  { rating: 1, emoji: "😞", label: "Rough" },
-  { rating: 2, emoji: "😕", label: "Low" },
-  { rating: 3, emoji: "😐", label: "Okay" },
-  { rating: 4, emoji: "🙂", label: "Good" },
-  { rating: 5, emoji: "😄", label: "Great" },
+  {
+    rating: 1,
+    emoji: (
+      <Image
+        source={require("../assets/low.png")}
+        style={{ height: 40, width: 40 }}
+      />
+    ),
+    label: "Rough",
+  },
+  {
+    rating: 2,
+    emoji: (
+      <Image
+        source={require("../assets/tired.png")}
+        style={{ height: 40, width: 40 }}
+      />
+    ),
+    label: "Low",
+  },
+  {
+    rating: 3,
+    emoji: (
+      <Image
+        source={require("../assets/neutral.png")}
+        style={{ height: 40, width: 40 }}
+      />
+    ),
+    label: "Okay",
+  },
+  {
+    rating: 4,
+    emoji: (
+      <Image
+        source={require("../assets/good.png")}
+        style={{ height: 40, width: 40 }}
+      />
+    ),
+    label: "Good",
+  },
+  {
+    rating: 5,
+    emoji: (
+      <Image
+        source={require("../assets/great.png")}
+        style={{ height: 40, width: 40 }}
+      />
+    ),
+    label: "Great",
+  },
 ];
 
-export default function ReflectionAccordion({ visible, onClose, onSave, existingData }) {
+export default function ReflectionAccordion({
+  visible,
+  onClose,
+  onSave,
+  existingData,
+}) {
   const [mood, setMood] = useState(existingData?.mood_rating ?? null);
-  const [achievements, setAchievements] = useState(existingData?.achievements ?? "");
+  const [achievements, setAchievements] = useState(
+    existingData?.achievements ?? "",
+  );
   const [challenges, setChallenges] = useState(existingData?.challenges ?? "");
-  const [nextDayFocus, setNextDayFocus] = useState(existingData?.next_day_focus ?? "");
+  const [nextDayFocus, setNextDayFocus] = useState(
+    existingData?.next_day_focus ?? "",
+  );
   const [error, setError] = useState(null);
 
   const isComplete =
@@ -65,7 +120,12 @@ export default function ReflectionAccordion({ visible, onClose, onSave, existing
     }
 
     setError(null);
-    onSave({ mood_rating: mood, achievements, challenges, next_day_focus: nextDayFocus });
+    onSave({
+      mood_rating: mood,
+      achievements,
+      challenges,
+      next_day_focus: nextDayFocus,
+    });
     onClose();
   };
 
@@ -79,14 +139,18 @@ export default function ReflectionAccordion({ visible, onClose, onSave, existing
       <SafeAreaView style={styles.safeArea}>
         <KeyboardAvoidingView
           style={{ flex: 1 }}
-          behavior={Platform.OS === "ios" ? "padding" : "height"}>
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+        >
           <View style={styles.overlay}>
             <View style={styles.sheet}>
               <View style={styles.handle} />
 
               <View style={styles.header}>
                 <Text style={styles.title}>Reflection for today</Text>
-                <TouchableOpacity onPress={handleClose} style={closeBtnStyles.btn}>
+                <TouchableOpacity
+                  onPress={handleClose}
+                  style={closeBtnStyles.btn}
+                >
                   <Text style={closeBtnStyles.text}>✕</Text>
                 </TouchableOpacity>
               </View>
@@ -94,20 +158,32 @@ export default function ReflectionAccordion({ visible, onClose, onSave, existing
               <ScrollView
                 showsVerticalScrollIndicator={false}
                 keyboardShouldPersistTaps="handled"
-                contentContainerStyle={styles.scroll}>
+                contentContainerStyle={styles.scroll}
+              >
                 {error && <Text style={styles.error}>{error}</Text>}
 
-                <Text style={styles.sectionLabel}>How are you feeling today?</Text>
+                <Text style={styles.sectionLabel}>
+                  How are you feeling today?
+                </Text>
                 <View style={styles.moodRow}>
                   {MOODS.map(({ rating, emoji, label }) => (
                     <TouchableOpacity
                       key={rating}
-                      style={[styles.moodBtn, mood === rating && styles.moodBtnSelected]}
+                      style={[
+                        styles.moodBtn,
+                        mood === rating && styles.moodBtnSelected,
+                      ]}
                       onPress={() => setMood(rating)}
-                      activeOpacity={0.8}>
+                      activeOpacity={0.8}
+                    >
                       <Text style={styles.moodEmoji}>{emoji}</Text>
                       <Text style={styles.moodNumber}>{rating}</Text>
-                      <Text style={[styles.moodLabel, mood === rating && styles.moodLabelSelected]}>
+                      <Text
+                        style={[
+                          styles.moodLabel,
+                          mood === rating && styles.moodLabelSelected,
+                        ]}
+                      >
                         {label}
                       </Text>
                     </TouchableOpacity>
@@ -154,11 +230,17 @@ export default function ReflectionAccordion({ visible, onClose, onSave, existing
                 <Text style={styles.charCount}>{nextDayFocus.length}/500</Text>
 
                 <TouchableOpacity
-                  style={[styles.saveBtn, !isComplete && styles.saveBtnDisabled]}
+                  style={[
+                    styles.saveBtn,
+                    !isComplete && styles.saveBtnDisabled,
+                  ]}
                   onPress={handleSave}
-                  activeOpacity={isComplete ? 0.85 : 1}>
+                  activeOpacity={isComplete ? 0.85 : 1}
+                >
                   <Text style={styles.saveBtnText}>
-                    {isComplete ? "Save Reflection ✓" : "Fill in all fields to save"}
+                    {isComplete
+                      ? "Save Reflection ✓"
+                      : "Fill in all fields to save"}
                   </Text>
                 </TouchableOpacity>
               </ScrollView>
@@ -234,14 +316,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: 10,
     borderRadius: 12,
-    borderWidth: 2,
-    borderColor: MUTED,
-    backgroundColor: SURFACE,
+    borderWidth: 0,
+    backgroundColor: CARD,
     gap: 2,
   },
   moodBtnSelected: {
-    borderColor: ACCENT,
-    backgroundColor: ACCENT_SOFT,
+    borderWidth: 2,
+    borderColor: "#b9b9c8",
+    // backgroundColor: ACCENT_SOFT,
   },
   moodEmoji: {
     fontSize: 20,
