@@ -15,7 +15,7 @@ import {
 } from "react-native";
 import DayProgress from "../components/DayProgress";
 import LoadingScreen from "../components/LoadingScreen";
-import LoginScreen from "../Login";
+import LoginModal from "../components/LoginModal";
 import ReflectionAccordion from "../components/ReflectionAccordian";
 import SubmitSuccessModal from "../components/SubmitSuccessModal";
 import TaskCard from "../components/TaskCard";
@@ -369,8 +369,6 @@ export default function HomeScreen() {
       }
 
       setSubmitted(true);
-      // setShowAnimation(true);
-      // navigation.navigate("Map");
       await saveUserDayState(user.id, checked, photo, true);
     } catch (err) {
       console.warn("Submit error:", err);
@@ -387,7 +385,7 @@ export default function HomeScreen() {
     <SafeAreaView style={{ flex: 1, backgroundColor: BG }}>
       {!loadingDone && <LoadingScreen onReady={isLoading ? null : () => setLoadingDone(true)} />}
 
-      <LoginScreen
+      <LoginModal
         visible={loginVisible}
         onClose={() => setLoginVisible(false)}
         onLoginSuccess={handleLoginSuccess}
