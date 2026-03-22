@@ -383,7 +383,7 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: BG }}>
-      {!loadingDone && <LoadingScreen onReady={isLoading ? null : () => setLoadingDone(true)} />}
+      {/* {!loadingDone && <LoadingScreen onReady={isLoading ? null : () => setLoadingDone(true)} />} */}
 
       <LoginModal
         visible={loginVisible}

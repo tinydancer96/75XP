@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   ActivityIndicator,
   Image,
@@ -26,6 +26,7 @@ import {
 import { StatusBar } from "expo-status-bar";
 import { useRouter } from "expo-router";
 import { useUserContext } from "./context/UserContext";
+import LoadingScreen from "./components/LoadingScreen";
 
 const BASE_URL = "https://xp75-be.onrender.com";
 
@@ -54,6 +55,8 @@ export default function LoginScreen() {
   const { login } = useUserContext();
   const router = useRouter();
 
+  const [loadingDone, setLoadingDone] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [mode, setMode] = useState("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -61,6 +64,11 @@ export default function LoginScreen() {
   const [avatar, setAvatar] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setIsLoading(false), 4700);
+    return () => clearTimeout(timer);
+  }, []);
 
   const resetForm = () => {
     setEmail("");
@@ -109,7 +117,7 @@ export default function LoginScreen() {
   };
 
   const handleRegister = async () => {
-    if (!avatar) {
+    if (avatar === null) {
       setError("Please choose an avatar");
       return;
     }
@@ -137,105 +145,110 @@ export default function LoginScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar style="dark" backgroundColor={CARD} />
-      <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-      >
-        <View style={styles.inner}>
-          <View style={styles.header}>
-            <Text style={styles.appName}>75XP</Text>
-            <Text style={styles.tagline}>Track your 75 day journey</Text>
-          </View>
+    <>
+      <SafeAreaView style={styles.container}>
+        {!loadingDone && <LoadingScreen onReady={isLoading ? null : () => setLoadingDone(true)} />}
+        <StatusBar style="dark" backgroundColor={CARD} />
+        <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+        >
+          <View style={styles.inner}>
+            <View style={styles.header}>
+              <Text style={styles.appName}>75XP</Text>
+              <Text style={styles.tagline}>Track your 75 day journey</Text>
+            </View>
 
-          <View style={styles.tabs}>
-            <TouchableOpacity
-              style={[styles.tab, mode === "login" && styles.tabActive]}
-              onPress={() => switchMode("login")}
+            <View style={styles.tabs}>
+              <TouchableOpacity
+                style={[styles.tab, mode === "login" && styles.tabActive]}
+                onPress={() => switchMode("login")}
+              >
+                <Text style={[styles.tabText, mode === "login" && styles.tabTextActive]}>
+                  Login
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.tab, mode === "register" && styles.tabActive]}
+                onPress={() => switchMode("register")}
+              >
+                <Text style={[styles.tabText, mode === "register" && styles.tabTextActive]}>
+                  Register
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            {error && <Text style={styles.error}>{error}</Text>}
+
+            <ScrollView
+              showsVerticalScrollIndicator={false}
+              keyboardShouldPersistTaps="handled"
+              contentContainerStyle={styles.scroll}
             >
-              <Text style={[styles.tabText, mode === "login" && styles.tabTextActive]}>Login</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.tab, mode === "register" && styles.tabActive]}
-              onPress={() => switchMode("register")}
-            >
-              <Text style={[styles.tabText, mode === "register" && styles.tabTextActive]}>
-                Register
-              </Text>
-            </TouchableOpacity>
-          </View>
+              {mode === "register" && (
+                <TextInput
+                  placeholder="Name"
+                  placeholderTextColor={MUTED}
+                  value={name}
+                  onChangeText={setName}
+                  style={styles.input}
+                />
+              )}
 
-          {error && <Text style={styles.error}>{error}</Text>}
-
-          <ScrollView
-            showsVerticalScrollIndicator={false}
-            keyboardShouldPersistTaps="handled"
-            contentContainerStyle={styles.scroll}
-          >
-            {mode === "register" && (
               <TextInput
-                placeholder="Name"
+                placeholder="Email"
                 placeholderTextColor={MUTED}
-                value={name}
-                onChangeText={setName}
+                value={email}
+                onChangeText={setEmail}
+                autoCapitalize="none"
+                keyboardType="email-address"
                 style={styles.input}
               />
-            )}
 
-            <TextInput
-              placeholder="Email"
-              placeholderTextColor={MUTED}
-              value={email}
-              onChangeText={setEmail}
-              autoCapitalize="none"
-              keyboardType="email-address"
-              style={styles.input}
-            />
+              <TextInput
+                placeholder="Password"
+                placeholderTextColor={MUTED}
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry
+                style={[styles.input, mode === "login" && styles.inputLast]}
+              />
 
-            <TextInput
-              placeholder="Password"
-              placeholderTextColor={MUTED}
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry
-              style={[styles.input, mode === "login" && styles.inputLast]}
-            />
-
-            {mode === "register" && (
-              <>
-                <Text style={styles.avatarLabel}>Choose an avatar</Text>
-                <View style={styles.avatarGrid}>
-                  {AVATARS.map((url) => (
-                    <TouchableOpacity
-                      key={url}
-                      onPress={() => setAvatar(url)}
-                      style={[styles.avatarWrapper, avatar === url && styles.avatarSelected]}
-                    >
-                      <Image source={{ uri: url }} style={styles.avatarImg} />
-                    </TouchableOpacity>
-                  ))}
-                </View>
-              </>
-            )}
-
-            <TouchableOpacity
-              onPress={mode === "login" ? handleLogin : handleRegister}
-              style={[styles.submitBtn, loading && styles.submitBtnDisabled]}
-              disabled={loading}
-            >
-              {loading ? (
-                <ActivityIndicator color={CARD} />
-              ) : (
-                <Text style={styles.submitBtnText}>
-                  {mode === "login" ? "Login" : "Create Account"}
-                </Text>
+              {mode === "register" && (
+                <>
+                  <Text style={styles.avatarLabel}>Choose an avatar</Text>
+                  <View style={styles.avatarGrid}>
+                    {AVATARS.map((url) => (
+                      <TouchableOpacity
+                        key={url}
+                        onPress={() => setAvatar(url)}
+                        style={[styles.avatarWrapper, avatar === url && styles.avatarSelected]}
+                      >
+                        <Image source={{ uri: url }} style={styles.avatarImg} />
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                </>
               )}
-            </TouchableOpacity>
-          </ScrollView>
-        </View>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+
+              <TouchableOpacity
+                onPress={mode === "login" ? handleLogin : handleRegister}
+                style={[styles.submitBtn, loading && styles.submitBtnDisabled]}
+                disabled={loading}
+              >
+                {loading ? (
+                  <ActivityIndicator color={CARD} />
+                ) : (
+                  <Text style={styles.submitBtnText}>
+                    {mode === "login" ? "Login" : "Create Account"}
+                  </Text>
+                )}
+              </TouchableOpacity>
+            </ScrollView>
+          </View>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
+    </>
   );
 }
 
