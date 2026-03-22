@@ -24,7 +24,7 @@ export default function LoadingScreen({ onReady }) {
     if (!onReady) return;
     Animated.timing(opacity, {
       toValue: 0,
-      duration: 800,
+      duration: 500,
       useNativeDriver: true,
     }).start(onReady);
   }, [onReady]);
