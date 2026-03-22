@@ -15,7 +15,7 @@ import {
 } from "react-native";
 import DayProgress from "../components/DayProgress";
 import LoadingScreen from "../components/LoadingScreen";
-import LoginModal from "../Login.jsx";
+import LoginScreen from "../Login";
 import ReflectionAccordion from "../components/ReflectionAccordian";
 import SubmitSuccessModal from "../components/SubmitSuccessModal";
 import TaskCard from "../components/TaskCard";
@@ -387,7 +387,7 @@ export default function HomeScreen() {
     <SafeAreaView style={{ flex: 1, backgroundColor: BG }}>
       {!loadingDone && <LoadingScreen onReady={isLoading ? null : () => setLoadingDone(true)} />}
 
-      <LoginModal
+      <LoginScreen
         visible={loginVisible}
         onClose={() => setLoginVisible(false)}
         onLoginSuccess={handleLoginSuccess}

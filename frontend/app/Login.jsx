@@ -3,7 +3,6 @@ import {
   ActivityIndicator,
   Image,
   KeyboardAvoidingView,
-  Modal,
   Platform,
   SafeAreaView,
   ScrollView,
@@ -20,12 +19,13 @@ import {
   MUTED,
   NAVY,
   SURFACE,
-  closeBtnStyles,
   fontSizes,
   fontWeights,
   shadow,
 } from "./styles/global";
 import { StatusBar } from "expo-status-bar";
+import { useRouter } from "expo-router";
+import { useUserContext } from "./context/UserContext";
 
 const BASE_URL = "https://xp75-be.onrender.com";
 
@@ -50,14 +50,10 @@ const AVATARS = [
   "https://i.pravatar.cc/150?u=user19.jpg",
 ];
 
-export default function LoginModal({
-  visible,
-  onClose,
-  onLoginSuccess,
-  user,
-  accessToken,
-  onLogout,
-}) {
+export default function LoginScreen() {
+  const { login } = useUserContext();
+  const router = useRouter();
+
   const [mode, setMode] = useState("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -65,7 +61,6 @@ export default function LoginModal({
   const [avatar, setAvatar] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [loggingOut, setLoggingOut] = useState(false);
 
   const resetForm = () => {
     setEmail("");
@@ -104,8 +99,8 @@ export default function LoginModal({
         return;
       }
       const profileUser = await fetchProfile(data.accessToken);
-      onLoginSuccess(profileUser, data.accessToken);
-      onClose();
+      login(profileUser, data.accessToken);
+      router.replace("/(tabs)/HomeScreen");
     } catch (err) {
       setError("Could not reach the server");
     } finally {
@@ -132,8 +127,8 @@ export default function LoginModal({
         return;
       }
       const profileUser = await fetchProfile(data.accessToken);
-      onLoginSuccess(profileUser, data.accessToken);
-      onClose();
+      login(profileUser, data.accessToken);
+      router.replace("/(tabs)/HomeScreen");
     } catch (err) {
       setError("Could not reach the server");
     } finally {
@@ -141,151 +136,106 @@ export default function LoginModal({
     }
   };
 
-  const handleLogout = async () => {
-    setLoggingOut(true);
-    try {
-      await fetch(`${BASE_URL}/api/auth/logout`, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${accessToken}` },
-      });
-    } catch (err) {
-      console.warn("Logout request failed:", err);
-    } finally {
-      setLoggingOut(false);
-      onLogout();
-      onClose();
-    }
-  };
-
   return (
-    <Modal transparent={false} visible={visible} animationType="fade">
+    <SafeAreaView style={styles.container}>
       <StatusBar style="dark" backgroundColor={CARD} />
-      <SafeAreaView style={styles.container}>
-        <KeyboardAvoidingView
-          style={{ flex: 1 }}
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-        >
-          <View style={styles.inner}>
-            <View style={styles.closeBtnRow}>
-              <TouchableOpacity onPress={onClose} style={closeBtnStyles.btn}>
-                <Text style={closeBtnStyles.text}>✕</Text>
-              </TouchableOpacity>
-            </View>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
+        <View style={styles.inner}>
+          <View style={styles.header}>
+            <Text style={styles.appName}>75XP</Text>
+            <Text style={styles.tagline}>Track your 75 day journey</Text>
+          </View>
 
-            <View style={styles.header}>
-              <Text style={styles.appName}>75XP</Text>
-              <Text style={styles.tagline}>Track your 75 day journey</Text>
-            </View>
-
-            {user && (
-              <View style={styles.loggedInBar}>
-                <Text style={styles.loggedInText} numberOfLines={1}>
-                  Logged in as <Text style={styles.loggedInName}>{user.name}</Text>
-                </Text>
-                <TouchableOpacity
-                  style={[styles.logoutBtn, loggingOut && styles.logoutBtnDisabled]}
-                  onPress={handleLogout}
-                  disabled={loggingOut}
-                >
-                  {loggingOut ? (
-                    <ActivityIndicator size="small" color={NAVY} />
-                  ) : (
-                    <Text style={styles.logoutBtnText}>Logout</Text>
-                  )}
-                </TouchableOpacity>
-              </View>
-            )}
-
-            <View style={styles.tabs}>
-              <TouchableOpacity
-                style={[styles.tab, mode === "login" && styles.tabActive]}
-                onPress={() => switchMode("login")}
-              >
-                <Text style={[styles.tabText, mode === "login" && styles.tabTextActive]}>
-                  Login
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.tab, mode === "register" && styles.tabActive]}
-                onPress={() => switchMode("register")}
-              >
-                <Text style={[styles.tabText, mode === "register" && styles.tabTextActive]}>
-                  Register
-                </Text>
-              </TouchableOpacity>
-            </View>
-
-            {error && <Text style={styles.error}>{error}</Text>}
-
-            <ScrollView
-              showsVerticalScrollIndicator={false}
-              keyboardShouldPersistTaps="handled"
-              contentContainerStyle={styles.scroll}
+          <View style={styles.tabs}>
+            <TouchableOpacity
+              style={[styles.tab, mode === "login" && styles.tabActive]}
+              onPress={() => switchMode("login")}
             >
-              {mode === "register" && (
-                <TextInput
-                  placeholder="Name"
-                  placeholderTextColor={MUTED}
-                  value={name}
-                  onChangeText={setName}
-                  style={styles.input}
-                />
-              )}
+              <Text style={[styles.tabText, mode === "login" && styles.tabTextActive]}>Login</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.tab, mode === "register" && styles.tabActive]}
+              onPress={() => switchMode("register")}
+            >
+              <Text style={[styles.tabText, mode === "register" && styles.tabTextActive]}>
+                Register
+              </Text>
+            </TouchableOpacity>
+          </View>
 
+          {error && <Text style={styles.error}>{error}</Text>}
+
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+            contentContainerStyle={styles.scroll}
+          >
+            {mode === "register" && (
               <TextInput
-                placeholder="Email"
+                placeholder="Name"
                 placeholderTextColor={MUTED}
-                value={email}
-                onChangeText={setEmail}
-                autoCapitalize="none"
-                keyboardType="email-address"
+                value={name}
+                onChangeText={setName}
                 style={styles.input}
               />
+            )}
 
-              <TextInput
-                placeholder="Password"
-                placeholderTextColor={MUTED}
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry
-                style={[styles.input, mode === "login" && styles.inputLast]}
-              />
+            <TextInput
+              placeholder="Email"
+              placeholderTextColor={MUTED}
+              value={email}
+              onChangeText={setEmail}
+              autoCapitalize="none"
+              keyboardType="email-address"
+              style={styles.input}
+            />
 
-              {mode === "register" && (
-                <>
-                  <Text style={styles.avatarLabel}>Choose an avatar</Text>
-                  <View style={styles.avatarGrid}>
-                    {AVATARS.map((url) => (
-                      <TouchableOpacity
-                        key={url}
-                        onPress={() => setAvatar(url)}
-                        style={[styles.avatarWrapper, avatar === url && styles.avatarSelected]}
-                      >
-                        <Image source={{ uri: url }} style={styles.avatarImg} />
-                      </TouchableOpacity>
-                    ))}
-                  </View>
-                </>
+            <TextInput
+              placeholder="Password"
+              placeholderTextColor={MUTED}
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry
+              style={[styles.input, mode === "login" && styles.inputLast]}
+            />
+
+            {mode === "register" && (
+              <>
+                <Text style={styles.avatarLabel}>Choose an avatar</Text>
+                <View style={styles.avatarGrid}>
+                  {AVATARS.map((url) => (
+                    <TouchableOpacity
+                      key={url}
+                      onPress={() => setAvatar(url)}
+                      style={[styles.avatarWrapper, avatar === url && styles.avatarSelected]}
+                    >
+                      <Image source={{ uri: url }} style={styles.avatarImg} />
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              </>
+            )}
+
+            <TouchableOpacity
+              onPress={mode === "login" ? handleLogin : handleRegister}
+              style={[styles.submitBtn, loading && styles.submitBtnDisabled]}
+              disabled={loading}
+            >
+              {loading ? (
+                <ActivityIndicator color={CARD} />
+              ) : (
+                <Text style={styles.submitBtnText}>
+                  {mode === "login" ? "Login" : "Create Account"}
+                </Text>
               )}
-
-              <TouchableOpacity
-                onPress={mode === "login" ? handleLogin : handleRegister}
-                style={[styles.submitBtn, loading && styles.submitBtnDisabled]}
-                disabled={loading}
-              >
-                {loading ? (
-                  <ActivityIndicator color={CARD} />
-                ) : (
-                  <Text style={styles.submitBtnText}>
-                    {mode === "login" ? "Login" : "Create Account"}
-                  </Text>
-                )}
-              </TouchableOpacity>
-            </ScrollView>
-          </View>
-        </KeyboardAvoidingView>
-      </SafeAreaView>
-    </Modal>
+            </TouchableOpacity>
+          </ScrollView>
+        </View>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 
@@ -298,14 +248,10 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 28,
   },
-  closeBtnRow: {
-    alignItems: "flex-end",
-    marginTop: 30,
-  },
   header: {
     alignItems: "center",
-    paddingTop: 32,
-    paddingBottom: 32,
+    paddingTop: 64,
+    paddingBottom: 40,
   },
   appName: {
     fontSize: 48,
@@ -317,44 +263,6 @@ const styles = StyleSheet.create({
     fontSize: fontSizes.base,
     color: MUTED,
     marginTop: 6,
-  },
-  loggedInBar: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    backgroundColor: SURFACE,
-    borderRadius: 10,
-    paddingVertical: 12,
-    paddingHorizontal: 14,
-    marginBottom: 16,
-  },
-  loggedInText: {
-    flex: 1,
-    fontSize: fontSizes.sm,
-    color: MUTED,
-    marginRight: 8,
-  },
-  loggedInName: {
-    fontWeight: fontWeights.semibold,
-    color: NAVY,
-  },
-  logoutBtn: {
-    backgroundColor: CARD,
-    borderWidth: 1,
-    borderColor: MUTED,
-    borderRadius: 6,
-    paddingVertical: 5,
-    paddingHorizontal: 12,
-    minWidth: 60,
-    alignItems: "center",
-  },
-  logoutBtnDisabled: {
-    opacity: 0.6,
-  },
-  logoutBtnText: {
-    fontSize: fontSizes.sm,
-    fontWeight: fontWeights.semibold,
-    color: NAVY,
   },
   tabs: {
     flexDirection: "row",
