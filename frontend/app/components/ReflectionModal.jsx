@@ -10,52 +10,10 @@ import {
   useWindowDimensions,
 } from "react-native";
 import { useState, useEffect, useRef } from "react";
+import Section from "./ReflectionSection";
+import buildWeekSummary from "./ReflectionWeekSummary";
 
 const summaryDay = [7, 14, 21, 28, 35, 42, 49, 56, 63, 70];
-
-function buildWeekSummary(dayId, data) {
-  const weekStart = dayId - 6;
-  const weekDays = data.filter(
-    (d) => d.day_number >= weekStart && d.day_number <= dayId,
-  );
-
-  if (weekDays.length === 0) return null;
-
-  const totalDays = weekDays.length;
-  const dietDays = weekDays.filter((d) => d.diet_adhered).length;
-  const indoorDays = weekDays.filter((d) => d.indoor_workout_completed).length;
-  const outdoorDays = weekDays.filter(
-    (d) => d.outdoor_workout_completed,
-  ).length;
-  const readDays = weekDays.filter((d) => d.pages_read).length;
-  const waterDays = weekDays.filter((d) => d.water_consumed).length;
-  const avgMood = (
-    weekDays.reduce((sum, d) => sum + d.mood_rating, 0) / totalDays
-  ).toFixed(1);
-
-  const achievements = weekDays
-    .map((d) => d.achievements)
-    .filter(Boolean)
-    .join(" ");
-  const challenges = weekDays
-    .map((d) => d.challenges)
-    .filter(Boolean)
-    .join(" ");
-
-  return {
-    stats: {
-      diet: dietDays,
-      indoor: indoorDays,
-      outdoor: outdoorDays,
-      read: readDays,
-      water: waterDays,
-      total: totalDays,
-      avgMood,
-    },
-    achievements,
-    challenges,
-  };
-}
 
 export default function ReflectionModal({ dayId, isLatest, data }) {
   const [visible, setVisible] = useState(false);
@@ -72,7 +30,7 @@ export default function ReflectionModal({ dayId, isLatest, data }) {
   const nodeColor = isSummaryDay ? "#e16041" : "#fbe268";
   const accentColor = isSummaryDay ? "#e16041" : "#cc785c";
 
-  const weekSummary = isSummaryDay ? buildWeekSummary(dayId, data) : null;
+  const weekSummary = isSummaryDay ? buildWeekSummary({ dayId, data }) : null;
 
   useEffect(() => {
     if (!isLatest) return;
@@ -146,17 +104,10 @@ export default function ReflectionModal({ dayId, isLatest, data }) {
         )}
       </Pressable>
 
-      <Modal
-        visible={visible}
-        animationType="fade"
-        transparent={true}
-        onRequestClose={handleClose}
-      >
+      <Modal visible={visible} animationType="fade" transparent={true} onRequestClose={handleClose}>
         <View style={styles.overlay}>
           <View style={[styles.sheet, { width: sheetWidth }]}>
-            <View
-              style={[styles.accentBar, { backgroundColor: accentColor }]}
-            />
+            <View style={[styles.accentBar, { backgroundColor: accentColor }]} />
 
             <View style={styles.header}>
               <View>
@@ -169,10 +120,7 @@ export default function ReflectionModal({ dayId, isLatest, data }) {
               </View>
               <Pressable
                 onPress={handleClose}
-                style={({ pressed }) => [
-                  styles.closeBtn,
-                  pressed && styles.closeBtnPressed,
-                ]}
+                style={({ pressed }) => [styles.closeBtn, pressed && styles.closeBtnPressed]}
               >
                 <Ionicons name="close" size={14} color={accentColor} />
               </Pressable>
@@ -189,7 +137,6 @@ export default function ReflectionModal({ dayId, isLatest, data }) {
               scrollEnabled={isSummaryDay}
               style={{ width: sheetWidth }}
             >
-              {/* Page 1 — Daily journal entry */}
               <View style={{ width: sheetWidth }}>
                 <ScrollView
                   style={styles.scrollArea}
@@ -268,78 +215,6 @@ export default function ReflectionModal({ dayId, isLatest, data }) {
   );
 }
 
-function WeekStatsRow({ stats, accentColor }) {
-  const items = [
-    { label: "Diet", value: `${stats.diet}/${stats.total}` },
-    { label: "Indoor", value: `${stats.indoor}/${stats.total}` },
-    { label: "Outdoor", value: `${stats.outdoor}/${stats.total}` },
-    { label: "Reading", value: `${stats.read}/${stats.total}` },
-    { label: "Mood", value: `${stats.avgMood}/5` },
-  ];
-
-  return (
-    <View style={statsStyles.row}>
-      {items.map((item) => (
-        <View
-          key={item.label}
-          style={[statsStyles.card, { borderColor: `${accentColor}30` }]}
-        >
-          <Text style={[statsStyles.value, { color: accentColor }]}>
-            {item.value}
-          </Text>
-          <Text style={statsStyles.label}>{item.label}</Text>
-        </View>
-      ))}
-    </View>
-  );
-}
-
-const statsStyles = StyleSheet.create({
-  row: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 8,
-    marginBottom: 4,
-  },
-  card: {
-    flex: 1,
-    minWidth: 56,
-    borderRadius: 10,
-    borderWidth: 1,
-    paddingVertical: 10,
-    alignItems: "center",
-    backgroundColor: "#faf9f8",
-  },
-  value: {
-    fontSize: 15,
-    fontWeight: "700",
-  },
-  label: {
-    fontSize: 10,
-    color: "#888",
-    marginTop: 2,
-    fontWeight: "500",
-  },
-});
-
-function Section({ icon, label, body, accentColor }) {
-  return (
-    <View style={styles.section}>
-      <View style={styles.sectionHeader}>
-        <View
-          style={[styles.iconPill, { backgroundColor: `${accentColor}18` }]}
-        >
-          <Ionicons name={icon} size={14} color={accentColor} />
-        </View>
-        <Text style={[styles.sectionLabel, { color: accentColor }]}>
-          {label}
-        </Text>
-      </View>
-      <Text style={styles.sectionBody}>{body}</Text>
-    </View>
-  );
-}
-
 const styles = StyleSheet.create({
   nodeTrigger: { padding: 3 },
   nodeTriggerPressed: { opacity: 0.5 },
@@ -405,27 +280,6 @@ const styles = StyleSheet.create({
     paddingTop: 20,
     paddingBottom: 28,
     gap: 20,
-  },
-  section: { gap: 8 },
-  sectionHeader: { flexDirection: "row", alignItems: "center", gap: 10 },
-  iconPill: {
-    width: 26,
-    height: 26,
-    borderRadius: 8,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  sectionLabel: {
-    fontSize: 11,
-    fontWeight: "700",
-    letterSpacing: 2,
-    textTransform: "uppercase",
-  },
-  sectionBody: {
-    fontSize: 15,
-    color: "#4a4a4a",
-    lineHeight: 23,
-    paddingLeft: 36,
   },
   pagination: {
     flexDirection: "row",

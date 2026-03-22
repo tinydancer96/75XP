@@ -34,16 +34,12 @@ export default function MapNodes({ imgWidth, imgHeight }) {
     if (!accessToken) return;
     const asyncFetchDay = async () => {
       try {
-        const response = await axios.get(
-          `https://xp75-be.onrender.com/api/days/`,
-          {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
+        const response = await axios.get(`https://xp75-be.onrender.com/api/days/`, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
           },
-        );
+        });
         const result = response.data;
-        // setData(Array.isArray(result) ? result : [result]);
 
         setData(result.days);
       } catch (error) {
@@ -58,11 +54,7 @@ export default function MapNodes({ imgWidth, imgHeight }) {
     <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
       {gridItems.map(({ dayId, row, col }) => (
         <View key={dayId} style={toCell(row, col)}>
-          <ReflectionModal
-            dayId={dayId}
-            isLatest={dayId === latestDayId}
-            data={data}
-          />
+          <ReflectionModal dayId={dayId} isLatest={dayId === latestDayId} data={data} />
         </View>
       ))}
     </View>
