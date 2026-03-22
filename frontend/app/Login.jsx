@@ -24,7 +24,7 @@ import {
   fontSizes,
   fontWeights,
   shadow,
-} from "../styles/global";
+} from "./styles/global";
 import { StatusBar } from "expo-status-bar";
 
 const BASE_URL = "https://xp75-be.onrender.com";
@@ -163,7 +163,8 @@ export default function LoginModal({
       <SafeAreaView style={styles.container}>
         <KeyboardAvoidingView
           style={{ flex: 1 }}
-          behavior={Platform.OS === "ios" ? "padding" : "height"}>
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+        >
           <View style={styles.inner}>
             <View style={styles.closeBtnRow}>
               <TouchableOpacity onPress={onClose} style={closeBtnStyles.btn}>
@@ -184,7 +185,8 @@ export default function LoginModal({
                 <TouchableOpacity
                   style={[styles.logoutBtn, loggingOut && styles.logoutBtnDisabled]}
                   onPress={handleLogout}
-                  disabled={loggingOut}>
+                  disabled={loggingOut}
+                >
                   {loggingOut ? (
                     <ActivityIndicator size="small" color={NAVY} />
                   ) : (
@@ -197,14 +199,16 @@ export default function LoginModal({
             <View style={styles.tabs}>
               <TouchableOpacity
                 style={[styles.tab, mode === "login" && styles.tabActive]}
-                onPress={() => switchMode("login")}>
+                onPress={() => switchMode("login")}
+              >
                 <Text style={[styles.tabText, mode === "login" && styles.tabTextActive]}>
                   Login
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.tab, mode === "register" && styles.tabActive]}
-                onPress={() => switchMode("register")}>
+                onPress={() => switchMode("register")}
+              >
                 <Text style={[styles.tabText, mode === "register" && styles.tabTextActive]}>
                   Register
                 </Text>
@@ -216,7 +220,8 @@ export default function LoginModal({
             <ScrollView
               showsVerticalScrollIndicator={false}
               keyboardShouldPersistTaps="handled"
-              contentContainerStyle={styles.scroll}>
+              contentContainerStyle={styles.scroll}
+            >
               {mode === "register" && (
                 <TextInput
                   placeholder="Name"
@@ -254,7 +259,8 @@ export default function LoginModal({
                       <TouchableOpacity
                         key={url}
                         onPress={() => setAvatar(url)}
-                        style={[styles.avatarWrapper, avatar === url && styles.avatarSelected]}>
+                        style={[styles.avatarWrapper, avatar === url && styles.avatarSelected]}
+                      >
                         <Image source={{ uri: url }} style={styles.avatarImg} />
                       </TouchableOpacity>
                     ))}
@@ -265,7 +271,8 @@ export default function LoginModal({
               <TouchableOpacity
                 onPress={mode === "login" ? handleLogin : handleRegister}
                 style={[styles.submitBtn, loading && styles.submitBtnDisabled]}
-                disabled={loading}>
+                disabled={loading}
+              >
                 {loading ? (
                   <ActivityIndicator color={CARD} />
                 ) : (
