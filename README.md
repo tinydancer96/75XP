@@ -25,4 +25,4 @@ In the output, you'll find options to open the app in a
 
 ## Demo
 
-[DEMO] (https://github.com/tinydancer96/75XP/blob/main/assets/75XP-DEMO.mp4)
+[DEMO](https://github.com/tinydancer96/75XP/blob/main/assets/75XP-DEMO.mp4)
