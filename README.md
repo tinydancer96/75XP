@@ -25,4 +25,4 @@ In the output, you'll find options to open the app in a
 
 ## Demo
 
-<video src="assets/75XP DEMO.mp4" controls width="600"></video>
+<video src="assets/75XP-DEMO.mp4" controls width="600"></video>
