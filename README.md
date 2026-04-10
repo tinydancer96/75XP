@@ -1,13 +1,28 @@
-# 75 Hard AI Habit Tracker
+# Welcome to your Expo app 👋
 
-A mobile app that helps users track their daily habits during the 75 Hard challenge and receive AI-generated motivational feedback on their weekly progress
+This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 
-[View Project Presentation](https://www.canva.com/design/DAHC4xi2_tU/otKEfyHXPk4Bz2FXZ4S4sA/edit?utm_content=DAHC4xi2_tU&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)
+## Get started
 
-[Research Document](./Planning/RESEARCH.md)
+1. Install dependencies
 
-## Schema Diagram
+   ```bash
+   npm install
+   ```
 
-[View interactive schema on dbdiagram.io](https://dbdiagram.io/d/69aae92aa3f0aa31e1123fb2)
+2. Start the app
 
-![Schema diagram](./spiking/db/erd.png)
+   ```bash
+   npx expo start
+   ```
+
+In the output, you'll find options to open the app in a
+
+- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
+- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
+- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
+- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+
+## Demo
+
+<video src="assets/75XP DEMO.mp4" controls width="600"></video>
